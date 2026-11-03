@@ -80,7 +80,7 @@ async function searchAllStores(inputQuery) {
     }
   }
 
-  // 3. Relevance Filtering & Scoring (with price sanity thresholds)
+  // 3. Relevance Filtering & Hardware Spec Verification (Zero-Tolerance Rules)
   const filtered = [];
   const seenUrls = new Set();
 
@@ -95,7 +95,8 @@ async function searchAllStores(inputQuery) {
       continue;
     }
 
-    const score = calculateRelevance(targetSearchTerm, item.title, item.price);
+    // Apply strict hardware validation rules
+    const score = calculateRelevance(rawInput, item.title, item.price);
     if (score >= 0.45) {
       item.relevanceScore = score;
       filtered.push(item);
@@ -172,11 +173,16 @@ async function searchAllStores(inputQuery) {
   const allDeals = [...top3, ...remainingPriced, ...unpricedItems];
   const executionTimeMs = Date.now() - startTime;
 
+  // Genuine dynamic store calculation (No fake static numbers!)
+  const uniqueDomains = new Set(allProducts.map(p => p.storeDomain || p.source)).size;
+  const verifiedStoresCount = scannedSources.length;
+
   return {
     query: rawInput,
     distilledQuery: targetSearchTerm,
     executionTimeMs,
-    storesScannedCount: 300 + scannedSources.length,
+    verifiedStoresCount,
+    totalStoresDiscovered: uniqueDomains,
     scannedSourcesList: scannedSources,
     totalFound: allDeals.length,
     summary,

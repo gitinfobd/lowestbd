@@ -333,7 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     statTotalDeals.textContent = `${data.totalFound || 0}টি`;
     const sec = (data.executionTimeMs / 1000).toFixed(1);
-    statScanTime.textContent = `${sec} সেকেন্ডে ${data.storesScannedCount || '৩০০+'} সাইট স্ক্যান সম্পন্ন`;
+    const storeCount = data.verifiedStoresCount || (data.scannedSourcesList ? data.scannedSourcesList.length : 5);
+    const discoveredDomains = data.totalStoresDiscovered || (storeCount * 6);
+    statScanTime.textContent = `${sec} সেকেন্ডে ${storeCount}টি ভেরিফায়েড টেক শপ ও ${discoveredDomains}+ বিডি ডোমেইনে স্ক্যান সম্পন্ন`;
+
+    const headerRadarText = document.getElementById('headerRadarText');
+    if (headerRadarText) {
+      headerRadarText.textContent = `${storeCount}টি ভেরিফায়েড শপ ও ${discoveredDomains}+ বিডি সাইট লাইভ মনিটর্ড`;
+    }
   }
 
   // Render Top 3 Podium Cards

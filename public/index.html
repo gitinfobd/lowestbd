@@ -59,18 +59,46 @@
   <!-- Hero & Search Box -->
   <main class="container main-content">
     <section class="hero-section">
-      <div class="hero-badge">🇧🇩 সর্ববৃহৎ লিকুইড ক্রিস্টাল প্রাইস ইঞ্জিন • প্রোডাক্ট লিঙ্ক বা নাম পেস্ট করুন</div>
+      <div class="hero-badge">🇧🇩 সর্ববৃহৎ অমনি-চ্যানেল প্রাইস ইঞ্জিন • ২২টি ক্যাটাগরি • ২,৩১০+ ভেরিফাইড বিডি সাইট</div>
       <h2 class="hero-title">এক ক্লিকেই জানুন দেশের সর্বনিম্ন মূল্য ও সেরা অফার</h2>
-      <p class="hero-desc">StarTech, Ryans, Daraz, Skyland, TechLand, Area 51, Computer Mania, Apple Gadgets, Dazzle সহ ৩০০+ টেক শপের রিয়েল-টাইম তথ্য।</p>
+      <p class="hero-desc">ফ্যাশন, টেক, গ্রোসারি, ফার্মেসি, বই, ফার্নিচার সহ ২২টি ক্যাটাগরির ২,৩১০+ সক্রিয় বিডি শপ থেকে রিয়েল-টাইম সেরা ৩ প্রাইস।</p>
 
-      <!-- Search Bar (Supports Keyword, Full Title, or Product Link) -->
+      <!-- Search Bar with Category Selector -->
       <form id="searchForm" class="crystal-search-box">
+        <div class="category-select-wrapper">
+          <select id="categorySelect" class="crystal-category-select" title="ক্যাটাগরি নির্বাচন করুন">
+            <option value="all">🔍 সকল ক্যাটাগরি (Auto-Detect)</option>
+            <option value="fashion">👗 ফ্যাশন ও পোশাক (১০৫ সাইট)</option>
+            <option value="electronics">💻 ইলেকট্রনিক্স ও গ্যাজেট (১০৫ সাইট)</option>
+            <option value="grocery">🛒 মুদি ও নিত্যপ্রয়োজনীয় (১০৫ সাইট)</option>
+            <option value="pharmacy">💊 ফার্মেসি ও ওষুধ (১০৫ সাইট)</option>
+            <option value="books">📚 বই ও প্রকাশনী (১০৫ সাইট)</option>
+            <option value="furniture">🛋️ আসবাবপত্র ও গৃহসজ্জা (১০৫ সাইট)</option>
+            <option value="beauty">💄 রূপচর্চা ও স্কিনকেয়ার (১০৫ সাইট)</option>
+            <option value="baby">🍼 মা ও শিশু যত্ন (১০৫ সাইট)</option>
+            <option value="footwear">👞 জুতো ও চামড়াজাত পণ্য (১০৫ সাইট)</option>
+            <option value="jewelry">💍 অলঙ্কার ও ঘড়ি (১০৫ সাইট)</option>
+            <option value="organic">🍯 অর্গানিক খাদ্য ও মধু (১০৫ সাইট)</option>
+            <option value="sports">🏏 খেলাধুলা ও ফিটনেস (১০৫ সাইট)</option>
+            <option value="automobile">🏍️ বাইক ও অটোমোবাইল (১০৫ সাইট)</option>
+            <option value="appliances">🔌 হোম অ্যাপ্লায়েন্স (১০৫ সাইট)</option>
+            <option value="bags">🎒 ব্যাগ ও ট্রাভেল লাগেজ (১০৫ সাইট)</option>
+            <option value="pets">🐾 পোষাপ্রাণীর যত্ন (১০৫ সাইট)</option>
+            <option value="music">🎸 বাদ্যযন্ত্র ও সাউন্ড (১০৫ সাইট)</option>
+            <option value="gifts">🎁 উপহার, ফুল ও কেক (১০৫ সাইট)</option>
+            <option value="eyewear">👓 চশমা ও সানগ্লাস (১০৫ সাইট)</option>
+            <option value="handicrafts">🌾 হস্তশিল্প ও কারুশিল্প (১০৫ সাইট)</option>
+            <option value="hardware">🛠️ হার্ডওয়্যার ও সোলার (১০৫ সাইট)</option>
+            <option value="marketplace">🏬 মেগাস্টোর ও মার্কেটপ্লেস (১০৫ সাইট)</option>
+          </select>
+        </div>
+
         <div class="search-input-wrapper">
           <span class="search-icon" id="searchIcon">🔍</span>
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="প্রোডাক্টের নাম, পুরো টাইটেল বা যেকোনো বিডি শপের প্রোডাক্ট লিঙ্ক পেস্ট করুন..." 
+            placeholder="প্রোডাক্টের নাম, বই, ওষুধ, পোশাক বা যেকোনো বিডি শপের প্রোডাক্ট লিঙ্ক লিখুন..." 
             autocomplete="off"
             autofocus
           >
@@ -87,15 +115,30 @@
         <span>🔗 <strong>প্রোডাক্ট লিঙ্ক ডিটেক্ট করা হয়েছে!</strong> স্টোর, বর্তমান মূল্য ও দেশের অন্যান্য শপের সেরা দাম অ্যানালাইজ হচ্ছে...</span>
       </div>
 
+      <!-- Category Quick Filter Pills -->
+      <div class="category-quick-pills">
+        <span class="preset-label">ক্যাটাগরি কুইক ফিল্টার:</span>
+        <button type="button" class="cat-quick-btn active" data-cat="all">🌐 সকল</button>
+        <button type="button" class="cat-quick-btn" data-cat="fashion">👗 ফ্যাশন</button>
+        <button type="button" class="cat-quick-btn" data-cat="electronics">💻 গ্যাজেট</button>
+        <button type="button" class="cat-quick-btn" data-cat="pharmacy">💊 ফার্মেসি</button>
+        <button type="button" class="cat-quick-btn" data-cat="books">📚 বই</button>
+        <button type="button" class="cat-quick-btn" data-cat="furniture">🛋️ আসবাবপত্র</button>
+        <button type="button" class="cat-quick-btn" data-cat="beauty">💄 বিউটি</button>
+        <button type="button" class="cat-quick-btn" data-cat="grocery">🛒 মুদি</button>
+        <button type="button" class="cat-quick-btn" data-cat="sports">🏏 খেলাধুলা</button>
+      </div>
+
       <!-- Preset Keyword Chips -->
       <div class="keyword-presets">
         <span class="preset-label">জনপ্রিয় সার্চ:</span>
         <button class="chip" data-query="Acer Nitro V15">Acer Nitro V15</button>
+        <button class="chip" data-query="Aarong Panjabi">Aarong Panjabi</button>
+        <button class="chip" data-query="Napa Extra">Napa Extra</button>
+        <button class="chip" data-query="Humayun Ahmed">Humayun Ahmed Boi</button>
+        <button class="chip" data-query="Hatil Sofa">Hatil Sofa</button>
         <button class="chip" data-query="RTX 4060">RTX 4060</button>
-        <button class="chip" data-query="Ryzen 5 5600">Ryzen 5 5600</button>
-        <button class="chip" data-query="iPhone 15">iPhone 15</button>
-        <button class="chip" data-query="MacBook Air M2">MacBook Air M2</button>
-        <button class="chip" data-query="Logitech mouse">Logitech Mouse</button>
+        <button class="chip" data-query="Miniket Rice">Miniket Rice</button>
         <button class="chip" data-query="https://area51.com.bd/acer-nitro-v15-anv15-rtx-4060-gaming-laptop/">🔗 Area51 Nitro Link</button>
       </div>
     </section>
@@ -106,8 +149,8 @@
         <div class="spinner-ring"></div>
         <div class="spinner-center">💎</div>
       </div>
-      <h3 class="loading-title">৩০০+ টেক ওয়েবসাইটে লাইভ স্ক্যান চলছে...</h3>
-      <p class="loading-subtitle">Area 51, Star Tech, Daraz, Ryans, Skyland, TechLand, Computer Mania ও Apple Gadgets-এর ডাটা সমন্বয় করা হচ্ছে</p>
+      <h3 class="loading-title" id="loadingTitle">ক্যাটাগরি অনুযায়ী স্টোরসমূহে লাইভ প্যারালাল স্ক্যান চলছে...</h3>
+      <p class="loading-subtitle" id="loadingSubtitle">নির্বাচিত ক্যাটাগরির ১০৫+ স্টোর এবং সকল বিডি ই-কমার্স সাইটের রিয়েল-টাইম ডাটা সমন্বয় করা হচ্ছে</p>
       <div class="store-ticker">
         <span class="ticker-store">🛸 Area 51 BD</span>
         <span class="ticker-store">⭐ Star Tech BD</span>

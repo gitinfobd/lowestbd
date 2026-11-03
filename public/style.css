@@ -370,6 +370,94 @@ body {
   box-shadow: var(--neu-inset), 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
+/* Category Selector inside Search Box */
+.category-select-wrapper {
+  display: flex;
+  align-items: center;
+  border-right: 1px solid var(--border-crystal);
+  padding: 0 10px;
+}
+
+.crystal-category-select {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-crystal);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  box-shadow: var(--neu-button);
+  transition: var(--transition);
+  max-width: 220px;
+}
+
+.crystal-category-select:focus {
+  border-color: var(--accent-emerald);
+}
+
+/* Category Quick Filter Pills */
+.category-quick-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px auto 16px;
+  max-width: 900px;
+}
+
+.cat-quick-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-crystal);
+  box-shadow: var(--neu-button);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.cat-quick-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-emerald);
+  color: var(--text-primary);
+}
+
+.cat-quick-btn.active {
+  background: linear-gradient(135deg, var(--accent-emerald), #059669);
+  color: #ffffff;
+  border-color: var(--accent-emerald);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+/* Light Theme Overrides for Category Selector & Quick Pills */
+[data-theme="light"] .crystal-category-select {
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 2px 2px 5px #cad3df !important;
+}
+
+[data-theme="light"] .cat-quick-btn {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 2px 2px 6px #cad3df, -2px -2px 6px #ffffff !important;
+}
+
+[data-theme="light"] .cat-quick-btn.active {
+  background: #047857 !important;
+  color: #ffffff !important;
+}
+
 .search-input-wrapper {
   display: flex;
   align-items: center;

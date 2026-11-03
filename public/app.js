@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
   const searchForm = document.getElementById('searchForm');
+  const categorySelect = document.getElementById('categorySelect');
   const searchInput = document.getElementById('searchInput');
   const clearBtn = document.getElementById('clearBtn');
   const searchSubmitBtn = document.getElementById('searchSubmitBtn');
@@ -122,6 +123,29 @@ document.addEventListener('DOMContentLoaded', () => {
       executeSearch(q);
     }
   });
+
+  // 4.1 Category Quick Filter Pills & Selector
+  document.querySelectorAll('.cat-quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-quick-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.getAttribute('data-cat');
+      if (categorySelect) categorySelect.value = cat;
+      const q = searchInput.value.trim();
+      if (q) executeSearch(q);
+    });
+  });
+
+  if (categorySelect) {
+    categorySelect.addEventListener('change', () => {
+      const selected = categorySelect.value;
+      document.querySelectorAll('.cat-quick-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-cat') === selected);
+      });
+      const q = searchInput.value.trim();
+      if (q) executeSearch(q);
+    });
+  }
 
   // 5. Filter & Sort Handlers
   storeFilter.addEventListener('change', renderDeals);
@@ -542,14 +566,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // 9. Main Search Execution
   // =========================================================================
   async function executeSearch(query) {
+    const selectedCat = categorySelect ? categorySelect.value : 'all';
     loadingState.style.display = 'block';
     resultsSection.style.display = 'none';
     searchSubmitBtn.disabled = true;
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const url = `/api/search?q=${encodeURIComponent(query)}${selectedCat && selectedCat !== 'all' ? `&cat=${encodeURIComponent(selectedCat)}` : ''}`;
+      const res = await fetch(url);
       const data = await res.json();
       currentData = data;
+
+      // Sync category select with detected category
+      if (data.category && (!selectedCat || selectedCat === 'all')) {
+        if (categorySelect && data.category.id) {
+          categorySelect.value = data.category.id;
+        }
+        document.querySelectorAll('.cat-quick-btn').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-cat') === data.category.id);
+        });
+      }
 
       if (data.inspectedProduct) {
         inspectedBox.style.display = 'block';
@@ -609,13 +645,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     statTotalDeals.textContent = `${data.totalFound || 0}টি`;
     const sec = (data.executionTimeMs / 1000).toFixed(1);
-    const storeCount = data.verifiedStoresCount || (data.scannedSourcesList ? data.scannedSourcesList.length : 6);
-    const discoveredDomains = data.totalStoresDiscovered || (storeCount * 6);
-    statScanTime.textContent = `${sec} সেকেন্ডে ${storeCount}টি ভেরিফায়েড টেক শপ ও ${discoveredDomains}+ বিডি ডোমেইনে স্ক্যান সম্পন্ন`;
+    const cat = data.category;
+    const catName = cat ? `${cat.icon || '🛍️'} ${cat.nameBn || cat.nameEn || ''}` : 'বিডি ই-কমার্স';
+    const catStores = data.categoryStoresCount || 105;
+    statScanTime.textContent = `${sec} সেকেন্ডে ${catName}-এর ${catStores}টি সহ ২,৩১০+ সাইট স্ক্যান সম্পন্ন`;
 
     const headerRadarText = document.getElementById('headerRadarText');
     if (headerRadarText) {
-      headerRadarText.textContent = `${storeCount}টি ভেরিফায়েড শপ ও ${discoveredDomains}+ বিডি সাইট লাইভ মনিটর্ড`;
+      headerRadarText.textContent = `${catName} • ${catStores}টি স্টোর ও ২,৩১০+ সাইট লাইভ মনিটর্ড`;
     }
   }
 

@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { searchAllStores } = require('./src/aggregator');
 const { KNOWN_STORES } = require('./src/scrapers/universalBd');
+const { getAllCategories } = require('./src/categoryRouter');
 
 const PREFERRED_PORTS = [3000, 3001, 3002, 5000, 8080, 8000, 0];
 const ALERTS_FILE = path.join(__dirname, 'data', 'alerts.json');
@@ -69,9 +70,10 @@ const server = http.createServer(async (req, res) => {
   const reqUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = reqUrl.pathname;
 
-  // 1. REST API Search Endpoint: /api/search?q=...
+  // 1. REST API Search Endpoint: /api/search?q=...&category=...
   if (pathname === '/api/search') {
     const query = reqUrl.searchParams.get('q') || '';
+    const category = reqUrl.searchParams.get('category') || reqUrl.searchParams.get('cat') || null;
     if (!query) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Query parameter "q" is required. E.g. /api/search?q=RTX+4060' }));
@@ -79,13 +81,25 @@ const server = http.createServer(async (req, res) => {
     }
 
     try {
-      const results = await searchAllStores(query);
+      const results = await searchAllStores(query, category);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(results));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Search failed', message: err.message }));
     }
+    return;
+  }
+
+  // 1.1 Category List Endpoint: /api/categories
+  if (pathname === '/api/categories') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      success: true,
+      totalCategories: 22,
+      totalStores: 2310,
+      categories: getAllCategories()
+    }));
     return;
   }
 

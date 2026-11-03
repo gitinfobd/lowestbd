@@ -1,6 +1,6 @@
-# 🤖 BD Price Sentinel - Agent Architecture & Multi-Engine Specification (AGENTS.md)
+# 🤖 BD Price Sentinel - 22-Category Omni-Store Parallel Agent Architecture (AGENTS.md)
 
-This document defines the agent architecture, specialized scraping roles, strict hardware specification validation rules, and anti-hallucination protocols powering **দাম কত BD (BD Price Sentinel)**.
+This document defines the agent architecture, specialized scraping roles, multi-category routing protocols, strict hardware and product specification validation rules, and anti-hallucination protocols powering **দাম কত BD (BD Price Sentinel)** across **22 Categories and 2,310+ Verified Bangladeshi E-Commerce Stores**.
 
 ---
 
@@ -11,80 +11,115 @@ This document defines the agent architecture, specialized scraping roles, strict
                                                │
                                  ┌─────────────┴─────────────┐
                                  ▼                           ▼
-                    [Query Distiller Agent]      [Direct URL Inspector Agent]
+                 [Category Classifier & Intent]   [Direct URL Inspector Agent]
+                   - Auto Category Detection         - Extracts store & canonical
+                   - 22 Category Routing Engine        product title
                                  │                           │
                                  └─────────────┬─────────────┘
                                                ▼
-                                  [Multi-Store Parallel Hub]
-              ┌──────────────────┬─────────────┴────────────┬──────────────────┐
-              ▼                  ▼                          ▼                  ▼
-      [StarTech Agent]     [Daraz Agent]              [Ryans Agent]      [Skyland Agent]
-              │                  │                          │                  │
-              └──────────────────┴─────────────┬────────────┴──────────────────┘
+                         [Category Store Cluster Dispatcher Agent]
+                         (Loads 105+ Stores for Detected Category)
+                                               │
+                                 ┌─────────────┴─────────────┐
+                                 ▼                           ▼
+                   [Dedicated Direct Store APIs]    [Category Cluster Sweepers]
+                   - StarTech, Ryans, Daraz          - Parallel multi-site search
+                   - Dazzle, Apple Gadgets, Skyland  - DuckDuckGo / Search APIs
+                   - Chaldal, Rokomari, Arogga,      - 105+ Category Verified Stores
+                     Shajgoj, Hatil, Apex, etc.
+                                 │                           │
+                                 └─────────────┬─────────────┘
                                                ▼
                               [Universal BD Web Sentinel Agent]
-                              (Sweeps all .bd tech & ecommerce)
+                              (Sweeps all 2,310+ .bd web stores)
                                                │
                                                ▼
-                           [Hardware Strict Spec Verifier Agent]
-                           - Memory Gen Filter (DDR5 vs DDR4)
-                           - Chipset Matcher (B650 vs B550/B450)
-                           - Storage Capacity Matcher (512GB vs 64GB/256GB)
-                           - CPU Accessory Purger (Coolers/Fans vs CPUs)
-                           - Exact Numeric Model Anchor Enforcement
+                        [Product & Hardware Strict Spec Verifier]
+                        - Tech: DDR5 vs DDR4, NVMe capacity, CPU accessories
+                        - Pharma: Dosages (mg), pack count, syrup vs tab
+                        - Fashion/Books: Brand, author, edition, volume
+                        - Exact numeric model match enforcement
                                                │
                                                ▼
-                           [Best Value & Telemetry Ranker Agent]
-                           - 🥇 Top 1 Winner (Cheapest Verified In-Stock)
-                           - 🥈 Top 2 Runner-up
-                           - 🥉 Top 3 Budget Pick
-                           - Side-by-Side 3-Way Comparison Matrix
+                         [Best Value & Telemetry Ranker Agent]
+                         - 🥇 Top 1 Winner (Cheapest Verified In-Stock)
+                         - 🥈 Top 2 Runner-up Deal
+                         - 🥉 Top 3 Budget Pick
+                         - Side-by-Side 3-Way Comparison Matrix
                                                │
                                                ▼
-                             [Neumorphic Dual-Theme UI Engine]
+                         [Neumorphic Dual-Theme UI Engine]
+                         - Auto-Detected Category Badge & Category Selector
+                         - 100% Solid Bold Black in Light Theme (No washed-out text)
+                         - Instant Multi-Email Price Drop Alerts
 ```
 
 ---
 
-## 🛡️ Strict Hardware Specification Validation Protocols (Zero-Tolerance Rules)
+## 👥 Specialized Agent Roles
 
-### Rule 1: Memory Generation Isolation (DDR5 vs DDR4 vs DDR3)
-* If query specifies `DDR5` (e.g. `Team Elite 8GB DDR5`):
-  * Products containing `DDR4`, `DDR3`, or lacking `DDR5` are **STRICTLY DISQUALIFIED**.
-* If query specifies `DDR4`:
-  * Products containing `DDR5` or `DDR3` are **STRICTLY DISQUALIFIED**.
+### 1. Category Classifier & Intent Routing Agent (শ্রেণী বিন্যাস ও ইন্টেন্ট রাউটার)
+* **Goal**: Understand what kind of product the user is searching for and route queries to the correct category store cluster.
+* **Knowledge**: Maps keywords across 22 Bangladeshi e-commerce categories:
+  1. `fashion` (ফ্যাশন, শাড়ি, পাঞ্জাবি, শার্ট, পলো, থ্রি-পিস, জিন্স, জামদানি)
+  2. `electronics` (ল্যাপটপ, প্রসেসর, র‍্যাম, গ্রাফিক্স কার্ড, মনিটর, এসএসডি, ম্যাকবুক)
+  3. `grocery` (চাল, ডাল, তেল, চিনি, লবণ, মশলা, মাছ, মাংস, ডিম)
+  4. `pharmacy` (ওষুধ, ট্যাবলেট, সিরাপ, প্রেসক্রিপশন মেডিসিন, বিপি মেশিন, ডায়াবেটিস স্ট্রিপ)
+  5. `books` (বই, উপন্যাস, রকমারি, ইসলামিক বই, বিসিএস গাইড, পাঠ্যবই)
+  6. `furniture` (সোফা, খাট, ডাইনিং টেবিল, ওয়ারড্রোব, অফিস চেয়ার, হাতিল, অটোবি)
+  7. `beauty` (রূপচর্চা, সিরাম, সানস্ক্রিন, শ্যাম্পু, ময়েশ্চারাইজার, মেকআপ, লিপস্টিক)
+  8. `baby` (ডায়াপার, বেবি ফুড, সেরেল্যাক, বাচ্চাদের খেলনা, স্ট্রোলার)
+  9. `footwear` (জুতো, স্নিকার্স, স্যান্ডেল, লেদার জুতো, এপেক্স, বাটা)
+  10. `jewelry` (স্বর্ণের গহনা, রুপা, ডায়মন্ডের আংটি, ঘড়ি, চেইন)
+  11. `organic` (সুন্দরবনের মধু, খাঁটি সরিষার তেল, বিলোনা ঘি, চিয়া সিড, কালোজিরা)
+  12. `sports` (ক্রিকেট ব্যাট, ফুটবল, জার্সি, ট্রেডমিল, ডাম্বেল, ব্যাডমিন্টন র‍্যাকেট)
+  13. `automobile` (বাইক হেলমেট, বাইক পার্টস, ইঞ্জিন অয়েল, কার ড্যাশ ক্যাম)
+  14. `appliances` (রেফ্রিজারেটর, ফ্রিজ, এসি, ওয়াশিং মেশিন, ব্লেন্ডার, ওভেন)
+  15. `bags` (ট্রাভেল ব্যাগ, লাগেজ, ব্যাকপ্যাক, স্কুল ব্যাগ, লেদার ওয়ালেট)
+  16. `pets` (বিড়ালের খাবার, কুকুরের খাবার, অ্যাকোরিয়াম, পাখির খাঁচা)
+  17. `music` (গিটার, কিবোর্ড পিয়ানো, ড্রাম সেট, ভায়োলিন, হারমোনিয়াম, মাইক)
+  18. `gifts` (উপহার, ফুলের তোড়া, গোলাপ, বার্থডে কেক, চকোলেট বক্স)
+  19. `eyewear` (চশমা, সানগ্লাস, ব্লু-কাট লেন্স, কন্টাক্ট লেন্স, রে-ব্যান)
+  20. `handicrafts` (নকশী কাঁথা, পাটের ব্যাগ, মাটির পাত্র, পিতলের শোপিস, শীতল পাটি)
+  21. `hardware` (পাওয়ার ড্রিল, টুলবক্স, পানির পাম্প, সোলার প্যানেল, ইনভার্টার)
+  22. `marketplace` (দারাজ, পিকাবু, অথবা, ইভ্যালি, বিক্রয় মাল্টিভেন্ডর ডিল)
+* **Fallback**: When ambiguous or multi-category, sweeps across all 2,310+ stores.
 
-### Rule 2: Chipset / Motherboard Architecture Lock
-* If query specifies a motherboard chipset (e.g. `B650`, `B650M`, `B550`, `B450`, `B760`, `Z790`):
-  * The product title **MUST** contain that exact chipset family.
-  * Any competing generation (e.g. `B450M` or `B560M` when querying `B650M-B`) is **STRICTLY DISQUALIFIED**.
+### 2. Category Store Cluster Dispatcher Agent (ক্যাটাগরি ক্লাস্টার ডিসপ্যাচার)
+* **Goal**: Retrieve the 105+ verified stores dedicated to the detected category from `data/bangladesh_ecommerce_2000_sites.json`.
+* **Execution**: Dispatches parallel search clusters targeting the top stores and domain groups for that exact category.
 
-### Rule 3: Storage Capacity Exact Matching (SSD / NVMe vs Flash Drives)
-* If query specifies a capacity token (e.g. `512GB`, `1TB`, `2TB`, `256GB`, `8GB`, `16GB`, `32GB`):
-  * Products with mismatched capacities (e.g. `64GB`, `128GB`, `256GB` when asking for `512GB`) are **STRICTLY DISQUALIFIED**.
-* If query specifies `SSD`, `NVMe`, `M.2`, or `NM620`:
-  * Accessories, flash drives, pen drives, memory cards, and USB thumb drives are **STRICTLY PURGED**.
+### 3. Omni-Store Parallel Scraping & API Hub (প্যারালাল মাল্টি-স্টোর স্ক্র্যাপার হাব)
+* **Goal**: Execute real-time queries across all category stores in under 2.5 seconds using non-blocking asynchronous fetching (`Promise.allSettled`).
+* **Strategies**:
+  1. Direct Store APIs & Scrapers (Dazzle, Apple Gadgets, StarTech, Daraz, Ryans, Skyland, Chaldal, Rokomari, Arogga, Shajgoj, Hatil, Apex, etc.).
+  2. Targeted Category Domain Queries (`site:<domain1> OR site:<domain2>`).
+  3. Universal BD fallback sweep across all `.bd` domains.
 
-### Rule 4: CPU Processor vs CPU Cooler/Accessory Purge
-* If query is for a CPU (e.g. `Ryzen 5 7600`, `Core i5 13400`):
-  * Products titled with `Cooler`, `Fan`, `Radiator`, `Heatsink`, `Thermal Paste`, `Bracket`, `Suit for Ryzen`, `For Ryzen` are **STRICTLY PURGED**.
-  * A desktop processor cannot be priced below realistic hardware thresholds (e.g. min ৳8,000 BDT for modern CPUs).
+### 4. Hardware & Product Specification Verifier Agent (জিরো-টলারেন্স স্পেক ভেরিফায়ার)
+* **Goal**: Eliminate hallucinations, false-positive cheap accessories, mismatched memory generations, and wrong dosages.
+* **Protocols**:
+  - Memory: `DDR5` strictly disqualifies `DDR4` and `DDR3`.
+  - Chipset: `B650` strictly disqualifies `B450`, `B550`, `B560`.
+  - Storage: Capacity token matching (512GB strictly rejects 64GB / 256GB).
+  - CPU Accessories: CPUs reject fans, heatsinks, brackets, thermal paste.
+  - Pharma: Disqualifies mismatched dosages (e.g. 500mg vs 1000mg).
+  - Exact Numeric Match: Hardware and model numbers (`7600`, `5600`, `4060`, `MP225`, `M6`) must be strictly anchored.
 
-### Rule 5: Exact Numeric Model Match
-* Hardware numeric identifiers (e.g. `7600`, `5600`, `4060`, `620`, `225`, `650`) present in the user query **MUST** be present in the candidate product title. Competing numbers (e.g. `7500` vs `7600`, `450` vs `650`) are rejected.
+### 5. Best Value & Market Telemetry Ranker Agent (সেরা ৩ ডিল ও টেলিমেট্রি র‍্যাংকার)
+* **Goal**: Sort verified in-stock items by lowest price first and award:
+  - 🥇 Top 1 Winner (Cheapest Verified In-Stock)
+  - 🥈 Top 2 Runner-up Deal
+  - 🥉 Top 3 Budget Pick
+* **Output**: Detailed pricing comparison, average market price, maximum customer savings, and full comparison matrix.
 
 ---
 
-## 🎨 Neumorphic Design System Standards
+## 🎨 Neumorphic Dual-Theme UI Standards
 
-* **Soft Extruded 3D Surfaces**: Double-drop shadows creating tactile convex surfaces.
 * **Light Theme**:
-  * Background: Soft Neumorphic Slate `#e2e8f0`
-  * Shadow Top-Left: Light reflective `#ffffff`
-  * Shadow Bottom-Right: Soft dark `#cad3df`
-  * Text Contrast: Ultra-sharp `#0f172a` (slate-900) and `#1e293b` (slate-800) with AA/AAA compliance. Zero washed-out text!
+  - Background: Soft Neumorphic Slate `#e2e8f0`
+  - Typography: 100% Solid Bold Black (`#000000`, `#0f172a`) for all headings, titles, prices, and store names. Zero low-contrast/washed-out text.
 * **Dark Theme**:
-  * Background: Deep Neumorphic Night `#0d131f`
-  * Shadow Top-Left: `#182236`
-  * Shadow Bottom-Right: `#06090f`
-  * Accents: Vibrant Emerald `#10b981` & Cyan `#06b6d4`
+  - Background: Deep Neumorphic Night `#0c101a`
+  - Highlighting: Vibrant Emerald `#10b981` & Cyan `#38bdf8`

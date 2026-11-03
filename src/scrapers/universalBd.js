@@ -1,13 +1,16 @@
 const { fetchHtml } = require('../utils/curlFetcher');
 const { parseBdtPrice } = require('../utils/textMatcher');
 
-// Known Bangladeshi tech store mapping for friendly names & logos
+// Comprehensive Bangladeshi tech store directory (names, emojis, badges)
 const KNOWN_STORES = {
+  'area51.com.bd': { name: 'Area 51 BD', logo: '🛸', badge: 'Gaming Laptop Specialist' },
+  'computermania.com.bd': { name: 'Computer Mania BD', logo: '💻', badge: 'Top Gaming Laptop Chain' },
+  'itstore.com.bd': { name: 'IT Store BD', logo: '🏬', badge: 'Authentic Hardware' },
   'techlandbd.com': { name: 'TechLand BD', logo: '⚡', badge: 'Major Tech Retailer' },
   'applegadgetsbd.com': { name: 'Apple Gadgets BD', logo: '🍏', badge: 'Gadget Specialist' },
   'dazzle.com.bd': { name: 'Dazzle BD', logo: '✨', badge: 'Premium Devices' },
   'computervillage.com.bd': { name: 'Computer Village', logo: '🏙️', badge: 'Hardware Pioneer' },
-  'trusttechbd.com': { name: 'Trust Computer / TrustTech', logo: '🤝', badge: 'Multiplan Center' },
+  'trusttechbd.com': { name: 'Trust Computer BD', logo: '🤝', badge: 'Multiplan Center' },
   'trustcomputer.com.bd': { name: 'Trust Computer BD', logo: '🤝', badge: 'Multiplan Center' },
   'creatuscomputer.com': { name: 'Creatus Computer', logo: '🖥️', badge: 'Custom PC Builder' },
   'creatus.com.bd': { name: 'Creatus Computer', logo: '🖥️', badge: 'Custom PC Builder' },
@@ -19,11 +22,11 @@ const KNOWN_STORES = {
   'bdshop.com': { name: 'BDShop', logo: '📦', badge: 'Gadget & Gear' },
   'bikroy.com': { name: 'Bikroy Deals', logo: '🏷️', badge: 'Verified Listings' },
   'gamersbd.com': { name: 'Gamers BD', logo: '🎮', badge: 'Gaming Rig Specialist' },
+  'custommacbd.com': { name: 'Custom Mac BD', logo: '💻', badge: 'Mac & Apple Tech' },
+  'sumashtech.com': { name: 'Sumash Tech', logo: '📱', badge: 'Smartphone Hub' },
+  'gadgetandgear.com': { name: 'Gadget & Gear', logo: '💎', badge: 'Authorized Apple Reseller' },
   'samson.com.bd': { name: 'Samson BD', logo: '🔌', badge: 'Tech Equipment' },
   'nexus.com.bd': { name: 'Nexus Computer', logo: '🌐', badge: 'Hardware Hub' },
-  'gadgetandgear.com': { name: 'Gadget & Gear', logo: '💎', badge: 'Authorized Apple Reseller' },
-  'sumashtech.com': { name: 'Sumash Tech', logo: '📱', badge: 'Smartphone Hub' },
-  'custommacbd.com': { name: 'Custom Mac BD', logo: '💻', badge: 'Mac & Apple Tech' },
   'krible.com.bd': { name: 'Krible BD', logo: '🛍️', badge: 'Tech Marketplace' }
 };
 
@@ -37,7 +40,6 @@ function getStoreMeta(hostname) {
   if (KNOWN_STORES[cleanHost]) {
     return KNOWN_STORES[cleanHost];
   }
-  // Generic BD store formatter
   const parts = cleanHost.split('.');
   const baseName = parts[0];
   const capitalized = baseName.charAt(0).toUpperCase() + baseName.slice(1);
@@ -54,11 +56,10 @@ function getStoreMeta(hostname) {
  * @returns {Promise<Array>}
  */
 async function scrapeUniversalBd(query) {
-  // Query 1: Open BD Tech market search
-  // Query 2: Targeted domain sweep for stores like Techland, Apple Gadgets, Dazzle, Trust Computer, Computer Village, etc.
   const queries = [
-    `${query} price in bangladesh techland startech ryans applegadgets dazzle`,
-    `${query} site:techlandbd.com OR site:applegadgetsbd.com OR site:dazzle.com.bd OR site:trusttechbd.com OR site:computervillage.com.bd OR site:creatus.com.bd OR site:potakait.com OR site:ucc.com.bd`
+    `${query} price in bangladesh`,
+    `${query} site:area51.com.bd OR site:computermania.com.bd OR site:techlandbd.com OR site:applegadgetsbd.com OR site:dazzle.com.bd OR site:itstore.com.bd OR site:startech.com.bd OR site:ryans.com`,
+    `${query} site:custommacbd.com OR site:gamersbd.com OR site:skyland.com.bd OR site:creatus.com.bd OR site:potakait.com OR site:trusttechbd.com OR site:computervillage.com.bd OR site:ucc.com.bd OR site:ultratech.com.bd`
   ];
 
   const results = [];
@@ -92,6 +93,8 @@ async function scrapeUniversalBd(query) {
 
       // Filter to relevant BD sites or tech domains
       const isBdSite = hostname.endsWith('.bd') ||
+        hostname.includes('area51') ||
+        hostname.includes('computermania') ||
         hostname.includes('techland') ||
         hostname.includes('dazzle') ||
         hostname.includes('applegadgets') ||
@@ -102,28 +105,29 @@ async function scrapeUniversalBd(query) {
         hostname.includes('ryans') ||
         hostname.includes('bikroy') ||
         hostname.includes('pickaboo') ||
+        hostname.includes('itstore') ||
         hostname.includes('gadget');
 
       if (!isBdSite) continue;
 
-      const title = titles[i][2].replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').trim();
+      const title = titles[i][2].replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\|\|.*$/, '').trim();
       const snippet = snippets[i] ? snippets[i][1].replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').trim() : '';
 
       const combinedText = `${title} ${snippet}`;
 
       // Extract BDT Price patterns
       const pricePatterns = [
-        /(?:BDT|৳|Tk\.?|টাকা)\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i,
-        /([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})\s*(?:৳|Tk\.?|\/-|টাকা)/i,
-        /price(?:[:\s]+is|[:\s]+)?\s*(?:BDT|৳|Tk\.?)?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i
+        /(?:BDT|৳|Tk\.?|টাকা|price\s*is)\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i,
+        /([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})\s*(?:৳|Tk\.?|\/-|টাকা|BDT)/i,
+        /from\s*(?:BDT|৳|Tk\.?)?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i
       ];
 
       let foundPrice = 0;
       for (const p of pricePatterns) {
         const match = combinedText.match(p);
         if (match) {
-          const val = parseInt(match[1].replace(/,/g, ''), 10);
-          if (val >= 100 && val <= 5000000) {
+          const val = parseBdtPrice(match[1]);
+          if (val >= 150 && val <= 5000000) {
             foundPrice = val;
             break;
           }

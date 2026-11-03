@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>দাম কত BD - Bangladesh 300+ Tech Price Sentinel & Deal Finder</title>
-  <meta name="description" content="বাংলাদেশর ৩০০+ টেক ওয়েবসাইট থেকে রিয়েল-টাইম সেরা মূল্য, টপ ৩ অফার ও ডিসকাউন্ট যাচাই করুন।">
+  <title>দাম কত BD - Bangladesh 300+ Tech Price Sentinel & Comparison Matrix</title>
+  <meta name="description" content="বাংলাদেশর ৩০০+ টেক ওয়েবসাইট থেকে রিয়েল-টাইম সেরা মূল্য, টপ ৩ অফার, লিঙ্ক ইন্সপেক্টর ও সাইড-বাই-সাইড কম্পারিজন।">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -12,23 +12,34 @@
 </head>
 <body>
 
-  <!-- Background Glow & Grid -->
-  <div class="bg-glow"></div>
-  <div class="bg-grid"></div>
+  <!-- Ambient Crystal Glow & Grid -->
+  <div class="crystal-ambient-glow"></div>
+  <div class="crystal-grid-bg"></div>
 
   <!-- Header Section -->
   <header class="header">
     <div class="container header-inner">
       <div class="brand">
-        <div class="brand-icon">⚡</div>
+        <div class="brand-crystal-icon">💎</div>
         <div class="brand-text">
           <h1>দাম কত BD <span class="badge-sentinel">PRO SENTINEL</span></h1>
-          <p class="brand-subtitle">Bangladesh 300+ Tech Stores Omni-Price Scanner & Deal Hunter</p>
+          <p class="brand-subtitle">৩০০+ বিডি টেক ওয়েবসাইট • রিয়েল-টাইম প্রাইস ও অফার ফাইন্ডার</p>
         </div>
       </div>
-      <div class="header-radar">
-        <span class="radar-dot"></span>
-        <span class="radar-text">৩০০+ বিডি সাইট লাইভ স্ক্যানার সক্রিয়</span>
+      
+      <div class="header-actions">
+        <!-- Live Radar -->
+        <div class="header-radar">
+          <span class="radar-dot"></span>
+          <span class="radar-text">৩০০+ বিডি সাইট লাইভ স্ক্যানার সক্রিয়</span>
+        </div>
+
+        <!-- Light / Dark Mode Toggle -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="লাইট / ডার্ক মোড পরিবর্তন করুন" aria-label="Toggle Theme">
+          <span class="theme-icon-dark">🌙</span>
+          <span class="theme-icon-light">☀️</span>
+          <span class="theme-text">থিম</span>
+        </button>
       </div>
     </div>
   </header>
@@ -36,83 +47,110 @@
   <!-- Hero & Search Box -->
   <main class="container main-content">
     <section class="hero-section">
-      <div class="hero-badge">🇧🇩 বাংলাদেশর সর্ববৃহৎ টেক প্রাইস কম্পারিজন ইঞ্জিন</div>
+      <div class="hero-badge">🇧🇩 সর্ববৃহৎ লিকুইড ক্রিস্টাল প্রাইস ইঞ্জিন • প্রোডাক্ট লিঙ্ক বা নাম পেস্ট করুন</div>
       <h2 class="hero-title">এক ক্লিকেই জানুন দেশের সর্বনিম্ন মূল্য ও সেরা অফার</h2>
-      <p class="hero-desc">StarTech, Ryans, Daraz, Skyland, TechLand, Apple Gadgets, Dazzle, Trust Computer, Computer Village সহ দেশের ৩০০+ টেক শপের রিয়েল-টাইম ডাটা।</p>
+      <p class="hero-desc">StarTech, Ryans, Daraz, Skyland, TechLand, Area 51, Computer Mania, Apple Gadgets, Dazzle সহ ৩০০+ টেক শপের রিয়েল-টাইম তথ্য।</p>
 
-      <!-- Search Bar -->
-      <form id="searchForm" class="search-box">
+      <!-- Search Bar (Supports Keyword, Full Title, or Product Link) -->
+      <form id="searchForm" class="crystal-search-box">
         <div class="search-input-wrapper">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon" id="searchIcon">🔍</span>
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="প্রোডাক্ট নাম বা মডেল লিখুন (যেমন: RTX 4060, Ryzen 5 5600, iPhone 15)..." 
+            placeholder="প্রোডাক্টের নাম, পুরো টাইটেল বা যেকোনো বিডি শপের প্রোডাক্ট লিঙ্ক পেস্ট করুন..." 
             autocomplete="off"
             autofocus
           >
           <button type="button" id="clearBtn" class="clear-btn" style="display:none;">✕</button>
         </div>
-        <button type="submit" id="searchSubmitBtn" class="search-btn">
+        <button type="submit" id="searchSubmitBtn" class="crystal-search-btn">
           <span class="btn-text">দাম খুঁজুন</span>
           <span class="btn-icon">⚡</span>
         </button>
       </form>
 
+      <!-- URL Detect Banner -->
+      <div id="urlDetectBanner" class="url-detect-banner" style="display: none;">
+        <span>🔗 <strong>প্রোডাক্ট লিঙ্ক ডিটেক্ট করা হয়েছে!</strong> স্টোর, বর্তমান মূল্য ও দেশের অন্যান্য শপের সেরা দাম অ্যানালাইজ হচ্ছে...</span>
+      </div>
+
       <!-- Preset Keyword Chips -->
       <div class="keyword-presets">
         <span class="preset-label">জনপ্রিয় সার্চ:</span>
+        <button class="chip" data-query="Acer Nitro V15">Acer Nitro V15</button>
         <button class="chip" data-query="RTX 4060">RTX 4060</button>
         <button class="chip" data-query="Ryzen 5 5600">Ryzen 5 5600</button>
         <button class="chip" data-query="iPhone 15">iPhone 15</button>
         <button class="chip" data-query="MacBook Air M2">MacBook Air M2</button>
         <button class="chip" data-query="Logitech mouse">Logitech Mouse</button>
-        <button class="chip" data-query="Samsung Galaxy S24">Galaxy S24</button>
-        <button class="chip" data-query="Mechanical Keyboard">Mechanical Keyboard</button>
+        <button class="chip" data-query="https://area51.com.bd/acer-nitro-v15-anv15-rtx-4060-gaming-laptop/">🔗 Area51 Nitro Link</button>
       </div>
     </section>
 
     <!-- Loading State -->
-    <div id="loadingState" class="loading-state" style="display: none;">
-      <div class="scanner-spinner">
+    <div id="loadingState" class="loading-state crystal-box" style="display: none;">
+      <div class="crystal-spinner">
         <div class="spinner-ring"></div>
-        <div class="spinner-center">⚡</div>
+        <div class="spinner-center">💎</div>
       </div>
       <h3 class="loading-title">৩০০+ টেক ওয়েবসাইটে লাইভ স্ক্যান চলছে...</h3>
-      <p class="loading-subtitle">Star Tech, Daraz, Ryans, Skyland, TechLand, Apple Gadgets ও অন্যান্য স্টোরের দাম ও অফার সমন্বয় করা হচ্ছে</p>
+      <p class="loading-subtitle">Area 51, Star Tech, Daraz, Ryans, Skyland, TechLand, Computer Mania ও Apple Gadgets-এর ডাটা সমন্বয় করা হচ্ছে</p>
       <div class="store-ticker">
-        <span class="ticker-store">Star Tech BD</span>
-        <span class="ticker-store">Daraz Mall</span>
-        <span class="ticker-store">Ryans Computers</span>
-        <span class="ticker-store">Skyland BD</span>
-        <span class="ticker-store">Apple Gadgets BD</span>
-        <span class="ticker-store">TechLand BD</span>
-        <span class="ticker-store">Dazzle BD</span>
-        <span class="ticker-store">Computer Village</span>
+        <span class="ticker-store">🛸 Area 51 BD</span>
+        <span class="ticker-store">⭐ Star Tech BD</span>
+        <span class="ticker-store">🛍️ Daraz Mall</span>
+        <span class="ticker-store">💻 Ryans Computers</span>
+        <span class="ticker-store">💻 Computer Mania BD</span>
+        <span class="ticker-store">🛸 Skyland BD</span>
+        <span class="ticker-store">🍏 Apple Gadgets BD</span>
+        <span class="ticker-store">⚡ TechLand BD</span>
+        <span class="ticker-store">✨ Dazzle BD</span>
       </div>
     </div>
 
     <!-- Results Section -->
     <div id="resultsSection" class="results-section" style="display: none;">
 
+      <!-- Inspected URL Spotlight Box (if link was searched) -->
+      <div id="inspectedBox" class="inspected-crystal-box" style="display: none;">
+        <div class="inspected-header">
+          <span class="inspected-tag">🔗 আপনার পেস্ট করা প্রোডাক্ট ও স্টোর</span>
+          <span class="inspected-store-badge" id="inspectedStoreName">-</span>
+        </div>
+        <div class="inspected-content">
+          <div class="inspected-info">
+            <h4 id="inspectedTitle">-</h4>
+            <div class="inspected-price-row">
+              <span class="inspected-price-label">এই স্টোরে মূল্য:</span>
+              <span class="inspected-price-value" id="inspectedPrice">৳০</span>
+              <span class="inspected-stock-badge">✓ ইন-স্টক ভেরিফাইড</span>
+            </div>
+          </div>
+          <a id="inspectedLink" href="#" target="_blank" rel="noopener noreferrer" class="inspected-visit-btn">
+            মূল স্টোর পেজ দেখুন ↗
+          </a>
+        </div>
+      </div>
+
       <!-- Market Telemetry Bar -->
       <div class="telemetry-bar">
-        <div class="stat-card stat-lowest">
+        <div class="crystal-stat-card stat-lowest">
           <span class="stat-label">সবচেয়ে কম মূল্য</span>
           <span class="stat-value" id="statLowest">৳০</span>
           <span class="stat-badge" id="statLowestStore">-</span>
         </div>
-        <div class="stat-card">
+        <div class="crystal-stat-card">
           <span class="stat-label">গড় বাজারদর</span>
           <span class="stat-value" id="statAvg">৳০</span>
           <span class="stat-sub">সারা দেশের গড় রেট</span>
         </div>
-        <div class="stat-card stat-savings">
+        <div class="crystal-stat-card stat-savings">
           <span class="stat-label">সর্বোচ্চ সম্ভাব্য সেভিংস</span>
           <span class="stat-value" id="statSavings">৳০</span>
-          <span class="stat-sub">গড় দামের চেয়ে কম</span>
+          <span class="stat-sub">গড় দামের চেয়ে সাশ্রয়</span>
         </div>
-        <div class="stat-card">
+        <div class="crystal-stat-card">
           <span class="stat-label">মোট প্রাপ্ত ডিল</span>
           <span class="stat-value" id="statTotalDeals">০টি</span>
           <span class="stat-sub" id="statScanTime">০.০ সেকেন্ডে স্ক্যান সম্পন্ন</span>
@@ -133,7 +171,7 @@
       </section>
 
       <!-- Filter & Controls Bar -->
-      <div class="filter-controls">
+      <div class="crystal-filter-controls">
         <div class="filter-group">
           <label for="storeFilter">স্টোর নির্বাচন:</label>
           <select id="storeFilter">
@@ -160,6 +198,7 @@
       <section class="all-deals-section">
         <div class="section-header-compact">
           <h4>সকল তুলনা ও ডিল তালিকা (<span id="allDealsCount">0</span>টি ডিল)</h4>
+          <span class="compare-hint-text">💡 ৩টি প্রোডাক্ট একসাথে তুলনা করতে কার্ডের <strong>[⚖️ তুলনা করুন]</strong> বাটনে ক্লিক করুন</span>
         </div>
         <div id="allDealsContainer" class="deals-grid">
           <!-- Dynamically populated -->
@@ -170,7 +209,7 @@
 
     <!-- Free REST API Documentation Section -->
     <section class="api-docs-section">
-      <div class="api-docs-card">
+      <div class="crystal-box api-docs-card">
         <div class="api-docs-header">
           <span class="api-tag">FREE & OPEN REST API</span>
           <h3>আপনার যেকোনো প্রজেক্ট বা বটে ব্যবহার করুন</h3>
@@ -178,15 +217,16 @@
         </div>
         <div class="api-snippet">
           <div class="snippet-header">
-            <span>GET /api/search?q=RTX+4060</span>
+            <span>GET /api/search?q=Acer+Nitro+V15</span>
             <button class="copy-btn" id="copyApiBtn">📋 কোড কপি করুন</button>
           </div>
           <pre><code>// JavaScript Fetch Example
-fetch('http://localhost:3000/api/search?q=RTX+4060')
+fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
   .then(res => res.json())
   .then(data => {
     console.log('Top 1 Cheapest:', data.top3[0]);
-    console.log('Summary:', data.summary);
+    console.log('Inspected Link Data:', data.inspectedProduct);
+    console.log('Market Summary:', data.summary);
   });</code></pre>
         </div>
       </div>
@@ -194,15 +234,53 @@ fetch('http://localhost:3000/api/search?q=RTX+4060')
 
   </main>
 
+  <!-- Sticky Comparison Floating Drawer (Up to 3 Products) -->
+  <div id="comparisonDrawer" class="comparison-drawer" style="display: none;">
+    <div class="container drawer-inner">
+      <div class="drawer-left">
+        <span class="drawer-title">⚖️ প্রোডাক্ট তুলনা ড্রয়ার (<span id="compareCount">0</span>/3 নির্বাচিত)</span>
+        <div id="drawerThumbnails" class="drawer-thumbnails">
+          <!-- Thumbnails added here -->
+        </div>
+      </div>
+      <div class="drawer-actions">
+        <button id="clearCompareBtn" class="drawer-clear-btn">মুছে ফেলুন</button>
+        <button id="openCompareModalBtn" class="drawer-compare-btn">
+          <span>একসাথে ৩টি তুলনা করুন</span>
+          <span>⚡</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side-by-Side Comparison Modal (Up to 3 in One Row) -->
+  <div id="compareModal" class="compare-modal" style="display: none;">
+    <div class="modal-backdrop" id="closeModalBackdrop"></div>
+    <div class="modal-crystal-box">
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <h3>⚖️ সাইড-বাই-সাইড প্রোডাক্ট কম্পারিজন (Side-by-Side Comparison)</h3>
+          <p>নির্বাচিত প্রোডাক্টগুলোর মূল্য, ডিসকাউন্ট, অফার ও স্পেসিফিকেশন এক নজরে তুলনা করুন</p>
+        </div>
+        <button id="closeModalBtn" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- Comparison Matrix (One Row Up to 3 Columns) -->
+      <div id="comparisonMatrix" class="comparison-matrix">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-left">
-        <strong>দাম কত BD</strong> &bull; Bangladesh 300+ Tech Price Sentinel
-        <p>কভার করছে: Star Tech, Ryans, Daraz, TechLand, Skyland, Apple Gadgets, Dazzle, Trust Computer, Computer Village, Creatus, Potaka IT, UCC এবং বাংলাদেশের সকল টেক স্টোর।</p>
+        <strong>দাম কত BD</strong> &bull; Bangladesh 300+ Tech Price Sentinel & Comparison Matrix
+        <p>কভার করছে: Area 51, Star Tech, Ryans, Daraz, Computer Mania, TechLand, Skyland, Apple Gadgets, Dazzle, Trust Computer, Computer Village, Creatus, Potaka IT, UCC, IT Store এবং বাংলাদেশের সকল টেক স্টোর।</p>
       </div>
       <div class="footer-right">
-        <span>⚡ লাইভ পোর্ট: স্বয়ংক্রিয়ভাবে কনফিগারড</span>
+        <span>💎 লিকুইড ক্রিস্টাল ৩ডি ফ্রেমওয়ার্ক সক্রিয়</span>
       </div>
     </div>
   </footer>

@@ -3,20 +3,22 @@ const { scrapeDaraz } = require('./scrapers/daraz');
 const { scrapeRyans } = require('./scrapers/ryans');
 const { scrapeSkyland } = require('./scrapers/skyland');
 const { scrapeUniversalBd, KNOWN_STORES } = require('./scrapers/universalBd');
-const { calculateRelevance } = require('./utils/textMatcher');
+const { calculateRelevance, distillQuery } = require('./utils/textMatcher');
+const { inspectUrl } = require('./utils/urlInspector');
 
 /**
  * Master Aggregator for Bangladesh Tech Sites
- * @param {string} query
+ * @param {string} inputQuery - Keyword, full product title, or product URL
  * @returns {Promise<object>}
  */
-async function searchAllStores(query) {
+async function searchAllStores(inputQuery) {
   const startTime = Date.now();
-  const cleanQuery = (query || '').trim();
+  const rawInput = (inputQuery || '').trim();
 
-  if (!cleanQuery) {
+  if (!rawInput) {
     return {
       query: '',
+      distilledQuery: '',
       executionTimeMs: 0,
       totalScanned: 0,
       totalFound: 0,
@@ -26,17 +28,45 @@ async function searchAllStores(query) {
     };
   }
 
-  // 1. Run all scrapers in parallel with allSettled
+  // 1. Check if user pasted a direct URL
+  const isUrl = /^https?:\/\//i.test(rawInput);
+  let inspectedProduct = null;
+  let targetSearchTerm = rawInput;
+
+  if (isUrl) {
+    try {
+      inspectedProduct = await inspectUrl(rawInput);
+      if (inspectedProduct && inspectedProduct.title) {
+        targetSearchTerm = distillQuery(inspectedProduct.title);
+      } else {
+        targetSearchTerm = distillQuery(rawInput);
+      }
+    } catch (e) {
+      targetSearchTerm = distillQuery(rawInput);
+    }
+  } else {
+    targetSearchTerm = distillQuery(rawInput);
+  }
+
+  // 2. Run all scrapers in parallel with the distilled query
   const results = await Promise.allSettled([
-    scrapeStarTech(cleanQuery),
-    scrapeDaraz(cleanQuery),
-    scrapeRyans(cleanQuery),
-    scrapeSkyland(cleanQuery),
-    scrapeUniversalBd(cleanQuery)
+    scrapeStarTech(targetSearchTerm),
+    scrapeDaraz(targetSearchTerm),
+    scrapeRyans(targetSearchTerm),
+    scrapeSkyland(targetSearchTerm),
+    scrapeUniversalBd(targetSearchTerm)
   ]);
 
   let allProducts = [];
   const scannedSources = ['Star Tech', 'Daraz Bangladesh', 'Ryans Computers', 'Skyland BD'];
+
+  // If user pasted a URL, prepend it
+  if (inspectedProduct) {
+    allProducts.push(inspectedProduct);
+    if (!scannedSources.includes(inspectedProduct.source)) {
+      scannedSources.push(inspectedProduct.source);
+    }
+  }
 
   for (const res of results) {
     if (res.status === 'fulfilled' && Array.isArray(res.value)) {
@@ -44,14 +74,13 @@ async function searchAllStores(query) {
     }
   }
 
-  // 2. Add stores from Universal BD
   for (const p of allProducts) {
     if (!scannedSources.includes(p.source)) {
       scannedSources.push(p.source);
     }
   }
 
-  // 3. Relevance Filtering & Scoring
+  // 3. Relevance Filtering & Scoring (with price sanity thresholds)
   const filtered = [];
   const seenUrls = new Set();
 
@@ -60,25 +89,29 @@ async function searchAllStores(query) {
     if (seenUrls.has(item.link)) continue;
     seenUrls.add(item.link);
 
-    const score = calculateRelevance(cleanQuery, item.title);
-    if (score >= 0.35) {
+    if (item.isPastedUrl) {
+      item.relevanceScore = 1;
+      filtered.push(item);
+      continue;
+    }
+
+    const score = calculateRelevance(targetSearchTerm, item.title, item.price);
+    if (score >= 0.45) {
       item.relevanceScore = score;
       filtered.push(item);
     }
   }
 
-  // 4. Separate realistically priced products (>= 150 BDT) vs unpriced ("Call for price")
+  // 4. Separate priced products vs unpriced
   const pricedItems = filtered.filter(i => i.price >= 150);
   const unpricedItems = filtered.filter(i => !i.price || i.price < 150);
 
-  // Mark unpriced items price as 0
   for (const u of unpricedItems) {
     u.price = 0;
     u.priceDisplay = 'Call for Price';
   }
 
-  // Sort priced items:
-  // In stock items first, then by price ascending (cheapest first)
+  // Sort priced items: in-stock first, then price ascending (cheapest first)
   pricedItems.sort((a, b) => {
     if (a.inStock !== b.inStock) {
       return a.inStock ? -1 : 1;
@@ -90,7 +123,6 @@ async function searchAllStores(query) {
   const top3 = [];
   const topStores = new Set();
 
-  // Pick distinct stores for top 3 if available, or best overall deals
   for (const item of pricedItems) {
     if (top3.length >= 3) break;
     if (!topStores.has(item.source)) {
@@ -103,7 +135,6 @@ async function searchAllStores(query) {
     }
   }
 
-  // If we couldn't get 3 distinct stores, fill with remaining cheapest
   if (top3.length < 3) {
     for (const item of pricedItems) {
       if (top3.length >= 3) break;
@@ -137,21 +168,21 @@ async function searchAllStores(query) {
     };
   }
 
-  // Combined full list: top 3 first, then rest of priced items, then unpriced
   const remainingPriced = pricedItems.filter(p => !top3.some(t => t.link === p.link));
   const allDeals = [...top3, ...remainingPriced, ...unpricedItems];
-
   const executionTimeMs = Date.now() - startTime;
 
   return {
-    query: cleanQuery,
+    query: rawInput,
+    distilledQuery: targetSearchTerm,
     executionTimeMs,
     storesScannedCount: 300 + scannedSources.length,
     scannedSourcesList: scannedSources,
     totalFound: allDeals.length,
     summary,
     top3,
-    allDeals
+    allDeals,
+    inspectedProduct
   };
 }
 

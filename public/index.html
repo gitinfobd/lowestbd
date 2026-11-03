@@ -34,6 +34,12 @@
           <span class="radar-text" id="headerRadarText">৩০০+ বিডি সাইট ও ভেরিফায়েড শপ লাইভ স্ক্যানার</span>
         </div>
 
+        <!-- Wishlist Button -->
+        <button id="openWishlistBtn" class="theme-toggle-btn wishlist-header-btn" title="আমার সংরক্ষিত উইশলিস্ট ও প্রাইস ড্রপ অ্যালার্ট">
+          <span>❤️</span>
+          <span>উইশলিস্ট (<span id="wishlistHeaderCount">0</span>)</span>
+        </button>
+
         <!-- Light / Dark Mode Toggle -->
         <button id="themeToggleBtn" class="theme-toggle-btn" title="লাইট / ডার্ক মোড পরিবর্তন করুন" aria-label="Toggle Theme">
           <span class="theme-icon-dark">🌙</span>
@@ -268,6 +274,63 @@ fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
       <!-- Comparison Matrix (One Row Up to 3 Columns) -->
       <div id="comparisonMatrix" class="comparison-matrix">
         <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist & Multi-Email Price Drop Alert Modal -->
+  <div id="wishlistModal" class="compare-modal" style="display: none;">
+    <div class="modal-backdrop" id="closeWishlistBackdrop"></div>
+    <div class="modal-crystal-box wishlist-modal-box">
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <h3>❤️ আমার সংরক্ষিত উইশলিস্ট ও প্রাইস ড্রপ অ্যালার্ট</h3>
+          <p>পছন্দের প্রোডাক্ট সংরক্ষণ করুন এবং দাম কমলে বা স্টক সীমিত হলে সরাসরি ইমেইলে অ্যালার্ট পান</p>
+        </div>
+        <button id="closeWishlistBtn" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- Wishlist Action Toolbar -->
+      <div class="wishlist-toolbar">
+        <span class="wishlist-total-label">সংরক্ষিত মোট: <strong id="wishlistModalCount">0</strong>টি প্রোডাক্ট</span>
+        <button type="button" id="clearAllWishlistBtn" class="drawer-clear-btn" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">🗑️ সকল উইশলিস্ট মুছুন</button>
+      </div>
+
+      <!-- Wishlist Items Grid/List -->
+      <div id="wishlistItemsContainer" class="wishlist-items-container">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Multi-Email Subscription Box -->
+      <div class="alert-subscription-box">
+        <div class="alert-sub-header">
+          <div class="alert-sub-icon">🔔</div>
+          <div>
+            <h4>ইমেইল প্রাইস ড্রপ, অফার ও স্টক অ্যালার্ট সাবস্ক্রিপশন</h4>
+            <p>উইশলিস্টের কোনো পণ্যের দাম কমলে বা অফার এলে সাথে সাথে এই ইমেইলগুলোতে অ্যালার্ট যাবে। একাধিক ইমেইল যোগ বা রিমুভ করতে পারেন:</p>
+          </div>
+        </div>
+
+        <div class="email-input-bar">
+          <input type="email" id="subscriberEmailInput" placeholder="আপনার ইমেইল অ্যাড্রেস লিখুন (যেমন: buyer.bd@gmail.com)" autocomplete="email">
+          <button type="button" id="addEmailBtn" class="crystal-search-btn" style="padding: 10px 20px; font-size: 13px;">+ ইমেইল যোগ করুন</button>
+        </div>
+
+        <!-- Subscribed Emails Pills -->
+        <div class="subscribed-emails-wrapper">
+          <span class="sub-list-title">সক্রিয় অ্যালার্ট প্রাপক ইমেইলসমূহ:</span>
+          <div id="subscribedEmailsList" class="subscribed-emails-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Trigger Instant Alert Simulation -->
+        <div class="alert-trigger-bar">
+          <button type="button" id="triggerAlertBtn" class="trigger-alert-btn">
+            <span>⚡ টেস্ট প্রাইস ড্রপ অ্যালার্ট পাঠান (Simulate Alert Dispatch)</span>
+          </button>
+          <span id="alertStatusMsg" class="alert-status-msg"></span>
+        </div>
       </div>
     </div>
   </div>

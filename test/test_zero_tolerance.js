@@ -77,6 +77,22 @@ const tests = [
     title: 'AMD Ryzen 5 7600 Gaming Processor',
     price: 17399,
     expectedZero: false
+  },
+
+  // Bug 5: Mac mini ,m6 vs FiberFox Splicer Machine & Dazzle match
+  {
+    name: 'Mac mini ,m6 vs FiberFox Splicer Machine ৳142,000 (should be 0)',
+    query: 'Mac mini ,m6',
+    title: 'FiberFox Mini 3S Active V-Groov Clade Splicer Machine',
+    price: 142000,
+    expectedZero: true
+  },
+  {
+    name: 'Mac mini ,m6 vs Dazzle Apple Mac Mini M6 ৳109,990 (should be positive)',
+    query: 'Mac mini ,m6',
+    title: 'Apple Mac Mini M6 Chip With 12‑core CPU and 12-core GPU',
+    price: 109990,
+    expectedZero: false
   }
 ];
 

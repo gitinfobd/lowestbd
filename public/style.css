@@ -52,7 +52,7 @@
   --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Light Theme Variables - Tactile Soft Slate & High-Contrast Readability */
+/* Light Theme Variables - 100% Solid Bold Black Typography on Tactile Soft Neumorphic Slate */
 [data-theme="light"] {
   --bg-main: #e2e8f0;
   --bg-surface: #e2e8f0;
@@ -61,18 +61,18 @@
   --bg-input: #e2e8f0;
 
   --border-crystal: rgba(255, 255, 255, 0.7);
-  --border-crystal-highlight: rgba(5, 150, 105, 0.6);
-  --border-gold: rgba(217, 119, 6, 0.5);
+  --border-crystal-highlight: #000000;
+  --border-gold: #000000;
 
-  /* Deep High-Contrast Typography */
-  --text-primary: #0f172a;    /* Slate-900: solid pitch dark text */
-  --text-secondary: #1e293b;  /* Slate-800: crisp body text */
-  --text-muted: #475569;      /* Slate-600: distinct readable subtext */
+  /* 100% Solid Bold Black Typography */
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-muted: #111111;
 
-  --accent-emerald: #047857;  /* Emerald-700: deep rich green for prices */
-  --accent-cyan: #0284c7;     /* Sky-600 */
-  --accent-gold: #b45309;     /* Amber-700 */
-  --accent-rose: #be123c;     /* Rose-700 */
+  --accent-emerald: #004d25;
+  --accent-cyan: #003666;
+  --accent-gold: #78350f;
+  --accent-rose: #881337;
 
   /* Neumorphic Dual Shadows (Light Mode Soft UI) */
   --neu-flat: 8px 8px 18px #cad3df, -8px -8px 18px #ffffff;
@@ -81,20 +81,58 @@
   --neu-button: 5px 5px 12px #cad3df, -5px -5px 12px #ffffff;
   --neu-button-active: inset 3px 3px 6px #cad3df, inset -3px -3px 6px #ffffff;
 
-  /* Badges & Tags (Light Mode High Contrast) */
+  /* Badges & Tags (Light Mode High Contrast Bold Black) */
   --badge-gold-bg: #fef3c7;
-  --badge-gold-text: #92400e;
+  --badge-gold-text: #000000;
   --badge-silver-bg: #f1f5f9;
-  --badge-silver-text: #1e293b;
+  --badge-silver-text: #000000;
   --badge-bronze-bg: #ffedd5;
-  --badge-bronze-text: #9a3412;
+  --badge-bronze-text: #000000;
   --badge-offer-bg: #e0f2fe;
-  --badge-offer-text: #0369a1;
+  --badge-offer-text: #000000;
   --badge-stock-in-bg: #dcfce7;
-  --badge-stock-in-text: #14532d;
+  --badge-stock-in-text: #004d25;
 
-  --crystal-glow: radial-gradient(circle, rgba(4, 120, 87, 0.08) 0%, rgba(2, 132, 199, 0.05) 50%, transparent 75%);
-  --grid-line: rgba(148, 163, 184, 0.12);
+  --crystal-glow: radial-gradient(circle, rgba(0, 0, 0, 0.05) 0%, transparent 70%);
+  --grid-line: rgba(148, 163, 184, 0.15);
+}
+
+[data-theme="light"] body,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] div,
+[data-theme="light"] button,
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] label,
+[data-theme="light"] a,
+[data-theme="light"] .hero-title,
+[data-theme="light"] .hero-desc,
+[data-theme="light"] .stat-label,
+[data-theme="light"] .stat-value,
+[data-theme="light"] .stat-sub,
+[data-theme="light"] .section-title,
+[data-theme="light"] .section-desc,
+[data-theme="light"] .podium-title,
+[data-theme="light"] .store-name-text,
+[data-theme="light"] .deal-title,
+[data-theme="light"] .brand-subtitle,
+[data-theme="light"] .radar-text,
+[data-theme="light"] .preset-label,
+[data-theme="light"] .chip {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .price-main,
+[data-theme="light"] .stat-lowest .stat-value,
+[data-theme="light"] .deal-price {
+  color: #004d25 !important;
+  font-weight: 800 !important;
 }
 
 * {
@@ -1558,4 +1596,300 @@ body {
   .comparison-matrix { grid-template-columns: 1fr; }
   .drawer-inner { flex-direction: column; align-items: stretch; }
   .inspected-content { flex-direction: column; align-items: flex-start; }
+}
+
+/* ==========================================================================
+   Wishlist & Multi-Email Price Drop Alert Styles (Neumorphic Soft UI)
+   ========================================================================== */
+
+.wishlist-header-btn {
+  background: var(--bg-surface);
+  box-shadow: var(--neu-button);
+  border: 1px solid var(--border-crystal);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.wishlist-header-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--neu-flat-hover);
+  color: var(--accent-rose);
+}
+
+.wishlist-btn {
+  background: var(--bg-surface);
+  box-shadow: var(--neu-button);
+  border: 1px solid var(--border-crystal);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.wishlist-btn:hover {
+  color: #f43f5e;
+  transform: translateY(-2px);
+  box-shadow: var(--neu-flat-hover);
+}
+
+.wishlist-btn.active {
+  background: var(--bg-surface);
+  box-shadow: var(--neu-button-active);
+  color: #f43f5e;
+  border-color: #f43f5e;
+}
+
+/* Wishlist Modal Box */
+.wishlist-modal-box {
+  max-width: 900px;
+}
+
+.wishlist-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-crystal);
+}
+
+.wishlist-total-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.wishlist-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  padding-right: 6px;
+}
+
+.wishlist-item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg-surface);
+  box-shadow: var(--neu-flat);
+  border: 1px solid var(--border-crystal);
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.wishlist-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--neu-flat-hover);
+}
+
+.wishlist-item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.wishlist-item-logo {
+  font-size: 24px;
+}
+
+.wishlist-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wishlist-item-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wishlist-item-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--accent-emerald);
+}
+
+.wishlist-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wishlist-remove-btn {
+  background: var(--bg-surface);
+  box-shadow: var(--neu-button);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.wishlist-remove-btn:hover {
+  box-shadow: var(--neu-button-active);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Alert Subscription Box */
+.alert-subscription-box {
+  background: var(--bg-surface);
+  box-shadow: var(--neu-inset);
+  border: 1px solid var(--border-crystal);
+  padding: 20px;
+  border-radius: var(--radius-md);
+}
+
+.alert-sub-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.alert-sub-icon {
+  font-size: 26px;
+}
+
+.alert-sub-header h4 {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.alert-sub-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.email-input-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.email-input-bar input {
+  flex: 1;
+  background: var(--bg-surface);
+  box-shadow: var(--neu-inset);
+  border: 1px solid var(--border-crystal);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.email-input-bar input:focus {
+  border-color: var(--accent-emerald);
+}
+
+.subscribed-emails-wrapper {
+  margin-bottom: 18px;
+}
+
+.sub-list-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.subscribed-emails-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.email-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  box-shadow: var(--neu-button);
+  border: 1px solid var(--border-crystal);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.email-pill .email-remove-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-pill .email-remove-btn:hover {
+  transform: scale(1.2);
+}
+
+.alert-trigger-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-crystal);
+}
+
+.trigger-alert-btn {
+  background: linear-gradient(135deg, var(--accent-gold), #d97706);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--neu-button);
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.trigger-alert-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: var(--neu-flat-hover);
+}
+
+.alert-status-msg {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-emerald);
 }

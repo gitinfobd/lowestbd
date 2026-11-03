@@ -2,6 +2,8 @@ const { scrapeStarTech } = require('./scrapers/startech');
 const { scrapeDaraz } = require('./scrapers/daraz');
 const { scrapeRyans } = require('./scrapers/ryans');
 const { scrapeSkyland } = require('./scrapers/skyland');
+const { scrapeDazzle } = require('./scrapers/dazzle');
+const { scrapeAppleGadgets } = require('./scrapers/applegadgets');
 const { scrapeUniversalBd, KNOWN_STORES } = require('./scrapers/universalBd');
 const { calculateRelevance, distillQuery } = require('./utils/textMatcher');
 const { inspectUrl } = require('./utils/urlInspector');
@@ -50,6 +52,8 @@ async function searchAllStores(inputQuery) {
 
   // 2. Run all scrapers in parallel with the distilled query
   const results = await Promise.allSettled([
+    scrapeDazzle(targetSearchTerm),
+    scrapeAppleGadgets(targetSearchTerm),
     scrapeStarTech(targetSearchTerm),
     scrapeDaraz(targetSearchTerm),
     scrapeRyans(targetSearchTerm),
@@ -58,7 +62,7 @@ async function searchAllStores(inputQuery) {
   ]);
 
   let allProducts = [];
-  const scannedSources = ['Star Tech', 'Daraz Bangladesh', 'Ryans Computers', 'Skyland BD'];
+  const scannedSources = ['Dazzle BD', 'Apple Gadgets BD', 'Star Tech', 'Daraz Bangladesh', 'Ryans Computers', 'Skyland BD'];
 
   // If user pasted a URL, prepend it
   if (inspectedProduct) {

@@ -1,0 +1,20 @@
+{
+  "subscribers": [
+    "buyer.bd@gmail.com"
+  ],
+  "alertHistory": [
+    {
+      "id": 1793704924874,
+      "timestamp": "2026-11-03T11:22:04.874Z",
+      "recipients": [
+        "buyer.bd@gmail.com",
+        "client.vip@gmail.com"
+      ],
+      "productTitle": "Apple Mac Mini M6 Chip With 12-core CPU/GPU",
+      "store": "Dazzle BD",
+      "currentPrice": 109990,
+      "savings": 50000,
+      "subject": "🚨 দাম কমেছে! Dazzle BD-এ Apple Mac Mini M6 Chip With 12-core CPU/GPU-এর দাম এখন মাত্র ৳109,990!"
+    }
+  ]
+}

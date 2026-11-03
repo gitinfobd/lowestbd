@@ -81,7 +81,10 @@ function distillQuery(input) {
     } catch (e) {}
   }
 
-  // Preserve model numbers like rtx4060 -> rtx 4060, b650m -> b650m
+  // Clean punctuation including commas, semicolons, brackets
+  str = str.replace(/[,;()[\]{},:"'”’\\/|]/g, ' ');
+
+  // Preserve model numbers like rtx4060 -> rtx 4060, b650m -> b650m, m6 -> m6
   str = str.replace(/([a-zA-Z]{2,})([0-9]+)/g, '$1 $2').replace(/([0-9]+)([a-zA-Z]{2,})/g, '$1 $2');
 
   const noiseRegex = /\b(15\.6["”']?|14["”']?|16["”']?|13\.3["”']?|17\.3["”']?|fhd|qhd|uhd|4k|2k|ips|oled|144hz|165hz|240hz|360hz|display|screen|model|edition|gaming|notebook|processor|graphics|dedicated|price|bd|bangladesh|buy|online|official|unofficial|brand|new|in|ram|ssd|hdd|ddr4|ddr5|nvme|pcie|gen4|gen3|rgb|wifi|bluetooth|dos|windows|win11|year|warranty|2023|2024|2025|2026)\b/gi;
@@ -215,13 +218,38 @@ function calculateRelevance(rawQuery, title, price = 0) {
   }
 
   // =========================================================================
-  // ZERO-TOLERANCE RULE 6: Exact Hardware Model Number Anchor Matching
+  // ZERO-TOLERANCE RULE 6: Apple Mac & Apple Silicon Chip Isolation (M1 - M6)
   // =========================================================================
-  // Extract key model numbers like 7600, 5600, 4060, 620, 225
-  const modelNumbers = rawLower.match(/\b([0-9]{3,4}[a-z]*|[a-z]+[0-9]{3,4})\b/g) || [];
+  const queryWantsMac = /\b(mac|macbook|imac|mac\s*mini|mac\s*studio|mac\s*pro)\b/i.test(rawLower);
+  if (queryWantsMac) {
+    const titleHasMacOrApple = /\b(mac|macbook|imac|apple)\b/i.test(titleLower);
+    if (!titleHasMacOrApple) {
+      return 0; // Strict rejection: Not an Apple / Mac device!
+    }
+    // Purge industrial splicers, cables, adapters, optical tools
+    if (/\b(splicer|fiberfox|welder|cleaver|stripper|patch\s*cord|splitter|machine)\b/i.test(titleLower)) {
+      return 0; // Strict rejection: Splicer machine is NOT a Mac!
+    }
+  }
+
+  // Apple M-Series chip lock (m1, m2, m3, m4, m5, m6)
+  const mChipMatch = rawLower.match(/\b(m[1-9](?:\s*(?:pro|max|ultra))?)\b/i);
+  if (mChipMatch) {
+    const reqChip = mChipMatch[1].replace(/\s+/g, '').toLowerCase();
+    const titleHasReqChip = titleTokens.some(tt => tt === reqChip || tt.startsWith(reqChip)) || titleLower.includes(mChipMatch[1].toLowerCase());
+    if (!titleHasReqChip) {
+      return 0; // Strict rejection: Target Apple M-chip missing in product!
+    }
+  }
+
+  // =========================================================================
+  // ZERO-TOLERANCE RULE 7: Exact Hardware Model Number Anchor Matching
+  // =========================================================================
+  // Extract key model numbers like 7600, 5600, 4060, 620, 225, m6
+  const modelNumbers = rawLower.match(/\b([0-9]{3,4}[a-z]*|[a-z]+[0-9]{1,4})\b/g) || [];
   for (const mn of modelNumbers) {
-    // Ignore common spec numbers like 144, 165, 240, 2024
-    if (['144', '165', '240', '360', '2023', '2024', '2025', '2026'].includes(mn)) continue;
+    // Ignore common spec numbers & generic words
+    if (['144', '165', '240', '360', '2023', '2024', '2025', '2026', 'gb', 'tb', 'mb', 'hz'].includes(mn)) continue;
 
     // Check if title has this exact model number
     const foundModelNumber = titleTokens.some(tt => tt === mn || tt.startsWith(mn) || tt.endsWith(mn));

@@ -34,6 +34,12 @@
           <span class="radar-text" id="headerRadarText">৩০০+ বিডি সাইট ও ভেরিফায়েড শপ লাইভ স্ক্যানার</span>
         </div>
 
+        <!-- 2000+ BD Ecommerce Directory Link -->
+        <a href="#ecommerceDirectorySection" class="theme-toggle-btn directory-header-btn" title="২০০০+ বিডি ই-কমার্স সাইট ডাউনলোড (Excel/CSV)">
+          <span>📊</span>
+          <span>২০০০+ সাইট ডেটাবেজ</span>
+        </a>
+
         <!-- Wishlist Button -->
         <button id="openWishlistBtn" class="theme-toggle-btn wishlist-header-btn" title="আমার সংরক্ষিত উইশলিস্ট ও প্রাইস ড্রপ অ্যালার্ট">
           <span>❤️</span>
@@ -234,6 +240,87 @@ fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
     console.log('Inspected Link Data:', data.inspectedProduct);
     console.log('Market Summary:', data.summary);
   });</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bangladesh 2000+ E-Commerce Sites Directory Download Section -->
+    <section id="ecommerceDirectorySection" class="api-docs-section crystal-box directory-box">
+      <div class="api-docs-header">
+        <div class="api-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+          🇧🇩 দেশের বৃহত্তম ই-কমার্স ডেটাবেজ • ২২টি ক্যাটাগরি • ২,৩১০টি সক্রিয় সাইট
+        </div>
+        <h3 class="directory-title" style="margin-top: 14px; font-size: 26px; font-weight: 800; color: var(--text-primary);">
+          📥 বাংলাদেশ ২০০০+ ই-কমার্স ডিরেক্টরি ডাউনলোড (Google Sheet & Excel)
+        </h3>
+        <p class="api-docs-desc" style="max-width: 840px; margin: 10px auto 0; line-height: 1.6; color: var(--text-secondary);">
+          বাংলাদেশের শীর্ষ ২২টি প্রধান ক্যাটাগরির (Fashion, Electronics, Grocery, Pharmacy, Books, Furniture, Beauty ইত্যাদি) 
+          প্রতিটিতে সর্বনিম্ন ১০৫+ টি করে মোট <strong>২,৩১০টি ভেরিফাইড সক্রিয় ই-কমার্স ওয়েবসাইটের</strong> পূর্ণাঙ্গ স্প্রেডশিট। 
+          সবগুলো সাইটের নাম, অফিসিয়াল লিঙ্ক, ডোমেইন টাইপ, পণ্যের স্পেশালিটি, ডেলিভারি কভারেজ এবং পেমেন্ট মেথড ক্যাটাগরি অনুসারে সাজানো।
+        </p>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="directory-stats-grid">
+        <div class="dir-stat-card">
+          <span class="dir-stat-num">২,৩১০+</span>
+          <span class="dir-stat-label">মোট ভেরিফাইড ওয়েবসাইট</span>
+        </div>
+        <div class="dir-stat-card">
+          <span class="dir-stat-num">২২টি</span>
+          <span class="dir-stat-label">স্বতন্ত্র প্রধান ক্যাটাগরি</span>
+        </div>
+        <div class="dir-stat-card">
+          <span class="dir-stat-num">১০৫+</span>
+          <span class="dir-stat-label">প্রতি ক্যাটাগরিতে সর্বনিম্ন স্টোর</span>
+        </div>
+        <div class="dir-stat-card">
+          <span class="dir-stat-num">১০০%</span>
+          <span class="dir-stat-label">গুগল শিট ও এক্সেল রেডি</span>
+        </div>
+      </div>
+
+      <!-- Download Action Buttons (XLSX and CSV) -->
+      <div class="directory-download-actions">
+        <a href="/download/xlsx" class="crystal-search-btn btn-excel-download" download="bangladesh_ecommerce_2000_sites.xlsx">
+          <span class="btn-icon">📥</span>
+          <span class="btn-text">এক্সেল ওয়ার্কবুক ডাউনলোড (.xlsx - ২২টি ক্যাটাগরি ট্যাব সহ)</span>
+        </a>
+        <a href="/download/csv" class="crystal-search-btn btn-csv-download" download="bangladesh_ecommerce_2000_sites.csv">
+          <span class="btn-icon">📊</span>
+          <span class="btn-text">গুগল শিট / সিএসভি ডাউনলোড (.csv - UTF-8 BOM রেডি)</span>
+        </a>
+      </div>
+      <div class="download-help-text">
+        💡 <em>টিপ: .csv ফাইলটি UTF-8 BOM যুক্ত হওয়ায় সরাসরি মাইক্রোসফট এক্সেল এবং গুগল ড্রাইভে আপলোড করলেই বাংলা টেক্সট নিখুঁতভাবে প্রদর্শিত হবে। আর .xlsx ফাইলটিতে ২২টি ক্যাটাগরির জন্য ২২টি আলাদা শীট ট্যাব রয়েছে।</em>
+      </div>
+
+      <!-- Category Badges Grid -->
+      <div class="directory-category-showcase">
+        <h4 class="category-showcase-title">📂 অন্তর্ভুক্ত ২২টি প্রধান ক্যাটাগরি (প্রত্যেকটিতে ১০৫টি করে সাইট):</h4>
+        <div class="category-pill-grid" id="categoryPillGrid">
+          <div class="category-pill"><span class="cat-pill-icon">👗</span> <strong>১. ফ্যাশন ও পোশাক</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">💻</span> <strong>২. ইলেকট্রনিক্স ও গ্যাজেট</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🛒</span> <strong>৩. মুদি ও সুপারস্টোর</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">💊</span> <strong>৪. ফার্মেসি ও ওষুধ</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">📚</span> <strong>৫. বই ও প্রকাশনী</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🛋️</span> <strong>৬. আসবাবপত্র ও হোম ডেকর</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">💄</span> <strong>৭. রূপচর্চা ও স্কিনকেয়ার</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🍼</span> <strong>৮. মা ও শিশু যত্ন</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">👞</span> <strong>৯. জুতো ও চামড়াজাত পণ্য</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">💍</span> <strong>১০. অলঙ্কার ও ঘড়ি</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🍯</span> <strong>১১. অর্গানিক খাদ্য ও কৃষিপণ্য</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🏏</span> <strong>১২. খেলাধুলা ও ফিটনেস</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🏍️</span> <strong>১৩. বাইক পার্টস ও হেলমেট</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🔌</span> <strong>১৪. হোম অ্যাপ্লায়েন্স ও কিচেন</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🎒</span> <strong>১৫. ব্যাগ ও ট্রাভেল লাগেজ</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🐾</span> <strong>১৬. পোষাপ্রাণীর খাবার ও যত্ন</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🎸</span> <strong>১৭. বাদ্যযন্ত্র ও সাউন্ড সিস্টেম</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🎁</span> <strong>১৮. উপহার, ফুল ও কেক</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">👓</span> <strong>১৯. চশমা ও অপটিক্যাল আইকেয়ার</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🌾</span> <strong>২০. হস্তশিল্প ও পাটজাত পণ্য</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🛠️</span> <strong>২১. হার্ডওয়্যার ও সোলার টুলস</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill"><span class="cat-pill-icon">🏬</span> <strong>২২. মেগাস্টোর ও মাল্টিভেন্ডর</strong> <span class="cat-pill-count">১০৫টি</span></div>
         </div>
       </div>
     </section>

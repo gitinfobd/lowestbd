@@ -20,5 +20,8 @@
     "deals-bd"
   ],
   "author": "Antigravity",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
 }

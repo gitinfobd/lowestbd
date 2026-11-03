@@ -1893,3 +1893,204 @@ body {
   font-weight: 700;
   color: var(--accent-emerald);
 }
+
+/* ==========================================================================
+   Bangladesh 2000+ E-Commerce Directory Download Section Styling
+   ========================================================================== */
+
+.directory-box {
+  margin-top: 40px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-crystal);
+  box-shadow: var(--neu-flat);
+  padding: 36px 32px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.directory-title {
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.directory-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 28px 0;
+}
+
+.dir-stat-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-crystal);
+  padding: 18px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--neu-button);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.dir-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-emerald);
+}
+
+.dir-stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.dir-stat-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.directory-download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin: 24px 0 14px;
+}
+
+.btn-excel-download {
+  background: linear-gradient(135deg, #107c41, #185a30) !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 800;
+  padding: 14px 26px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--neu-button);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-excel-download:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 10px 25px rgba(16, 124, 65, 0.4);
+}
+
+.btn-csv-download {
+  background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 800;
+  padding: 14px 26px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--neu-button);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-csv-download:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4);
+}
+
+.download-help-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 800px;
+  margin: 0 auto 30px;
+  line-height: 1.5;
+}
+
+.category-showcase-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.category-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+  text-align: left;
+}
+
+.category-pill {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-crystal);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: var(--neu-button);
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+
+.category-pill:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+.cat-pill-icon {
+  font-size: 16px;
+}
+
+.cat-pill-count {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Light Mode Overrides for Directory Section */
+[data-theme="light"] .directory-title {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .dir-stat-card {
+  background: #f1f5f9 !important;
+  box-shadow: 4px 4px 10px #cad3df, -4px -4px 10px #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+[data-theme="light"] .dir-stat-num {
+  color: #047857 !important;
+}
+
+[data-theme="light"] .dir-stat-label {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .category-pill {
+  background: #f1f5f9 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 3px 3px 6px #cad3df, -3px -3px 6px #ffffff !important;
+}
+
+[data-theme="light"] .category-showcase-title {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .download-help-text {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}

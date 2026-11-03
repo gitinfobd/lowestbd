@@ -12,6 +12,8 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.csv': 'text/csv; charset=utf-8',
+  '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
@@ -190,7 +192,55 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 4. Static Files from /public
+  // 4. Bangladesh 2000+ E-Commerce Sites Directory API & Direct Downloads
+  if (pathname === '/api/ecommerce-directory') {
+    const jsonPath = path.join(__dirname, 'data', 'bangladesh_ecommerce_2000_sites.json');
+    if (fs.existsSync(jsonPath)) {
+      const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        metadata: data.metadata,
+        categories: data.categories
+      }));
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: 'Directory data not generated yet' }));
+    }
+    return;
+  }
+
+  if (pathname === '/download/csv') {
+    const filePath = path.join(__dirname, 'public', 'bangladesh_ecommerce_2000_sites.csv');
+    if (fs.existsSync(filePath)) {
+      res.writeHead(200, {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="bangladesh_ecommerce_2000_sites.csv"'
+      });
+      fs.createReadStream(filePath).pipe(res);
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('CSV file not found');
+    }
+    return;
+  }
+
+  if (pathname === '/download/xlsx') {
+    const filePath = path.join(__dirname, 'public', 'bangladesh_ecommerce_2000_sites.xlsx');
+    if (fs.existsSync(filePath)) {
+      res.writeHead(200, {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': 'attachment; filename="bangladesh_ecommerce_2000_sites.xlsx"'
+      });
+      fs.createReadStream(filePath).pipe(res);
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Excel file not found');
+    }
+    return;
+  }
+
+  // 5. Static Files from /public
   let filePath = path.join(__dirname, 'public', pathname === '/' ? 'index.html' : pathname);
   const ext = path.extname(filePath).toLowerCase();
 

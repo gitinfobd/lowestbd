@@ -31,7 +31,7 @@ async function scrapeAppleGadgets(query) {
       if (!p || !p.name) continue;
 
       const slug = p.urls?.[0]?.slug || '';
-      const link = slug ? `https://applegadgetsbd.com/product/${slug}` : 'https://applegadgetsbd.com';
+      const link = slug ? `https://www.applegadgetsbd.com/product/${slug}` : 'https://www.applegadgetsbd.com';
 
       const priceObj = p.variant?.prices?.[0];
       const rawPrice = priceObj?.price?.value || 0;

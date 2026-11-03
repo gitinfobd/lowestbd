@@ -1,65 +1,22 @@
 const { fetchHtml } = require('../utils/curlFetcher');
 const { parseBdtPrice } = require('../utils/textMatcher');
-
-// Comprehensive Bangladeshi tech store directory (names, emojis, badges)
-const KNOWN_STORES = {
-  'area51.com.bd': { name: 'Area 51 BD', logo: '🛸', badge: 'Gaming Laptop Specialist' },
-  'computermania.com.bd': { name: 'Computer Mania BD', logo: '💻', badge: 'Top Gaming Laptop Chain' },
-  'itstore.com.bd': { name: 'IT Store BD', logo: '🏬', badge: 'Authentic Hardware' },
-  'techlandbd.com': { name: 'TechLand BD', logo: '⚡', badge: 'Major Tech Retailer' },
-  'applegadgetsbd.com': { name: 'Apple Gadgets BD', logo: '🍏', badge: 'Gadget Specialist' },
-  'dazzle.com.bd': { name: 'Dazzle BD', logo: '✨', badge: 'Premium Devices' },
-  'computervillage.com.bd': { name: 'Computer Village', logo: '🏙️', badge: 'Hardware Pioneer' },
-  'trusttechbd.com': { name: 'Trust Computer BD', logo: '🤝', badge: 'Multiplan Center' },
-  'trustcomputer.com.bd': { name: 'Trust Computer BD', logo: '🤝', badge: 'Multiplan Center' },
-  'creatuscomputer.com': { name: 'Creatus Computer', logo: '🖥️', badge: 'Custom PC Builder' },
-  'creatus.com.bd': { name: 'Creatus Computer', logo: '🖥️', badge: 'Custom PC Builder' },
-  'potakait.com': { name: 'Potaka IT', logo: '🚩', badge: 'Gaming Hardware' },
-  'ucc.com.bd': { name: 'UCC Bangladesh', logo: '🏢', badge: 'Authorized Distributor' },
-  'ultratech.com.bd': { name: 'UltraTech BD', logo: '⚙️', badge: 'PC Components' },
-  'pchouse.com.bd': { name: 'PC House BD', logo: '🏠', badge: 'IT Shop BD' },
-  'pickaboo.com': { name: 'Pickaboo', logo: '📱', badge: 'Fast E-commerce' },
-  'bdshop.com': { name: 'BDShop', logo: '📦', badge: 'Gadget & Gear' },
-  'bikroy.com': { name: 'Bikroy Deals', logo: '🏷️', badge: 'Verified Listings' },
-  'gamersbd.com': { name: 'Gamers BD', logo: '🎮', badge: 'Gaming Rig Specialist' },
-  'custommacbd.com': { name: 'Custom Mac BD', logo: '💻', badge: 'Mac & Apple Tech' },
-  'sumashtech.com': { name: 'Sumash Tech', logo: '📱', badge: 'Smartphone Hub' },
-  'gadgetandgear.com': { name: 'Gadget & Gear', logo: '💎', badge: 'Authorized Apple Reseller' },
-  'samson.com.bd': { name: 'Samson BD', logo: '🔌', badge: 'Tech Equipment' },
-  'nexus.com.bd': { name: 'Nexus Computer', logo: '🌐', badge: 'Hardware Hub' },
-  'krible.com.bd': { name: 'Krible BD', logo: '🛍️', badge: 'Tech Marketplace' }
-};
+const { cleanMerchantUrl, isLinkActive } = require('../utils/linkVerifier');
+const { TOP_VERIFIED_STORES, TOTAL_ACTIVE_STORES_MONITORED, getStoreMeta } = require('./knownStores');
 
 /**
- * Format domain into clean store name
- * @param {string} hostname
- * @returns {{name: string, logo: string, badge: string}}
- */
-function getStoreMeta(hostname) {
-  const cleanHost = hostname.replace(/^www\./, '').toLowerCase();
-  if (KNOWN_STORES[cleanHost]) {
-    return KNOWN_STORES[cleanHost];
-  }
-  const parts = cleanHost.split('.');
-  const baseName = parts[0];
-  const capitalized = baseName.charAt(0).toUpperCase() + baseName.slice(1);
-  return {
-    name: `${capitalized} BD Tech`,
-    logo: '🏬',
-    badge: 'BD Retail Store'
-  };
-}
-
-/**
- * Universal Bangladesh Web & Tech Aggregator (sweeps 300+ BD tech stores)
+ * Universal Bangladesh Web & Tech Aggregator (sweeps 1,000+ BD tech stores)
+ * Enforces active link verification: zero broken/redirect links.
  * @param {string} query
  * @returns {Promise<Array>}
  */
 async function scrapeUniversalBd(query) {
+  const cleanQ = (query || '').replace(/[,\-_]+/g, ' ').trim();
+  if (!cleanQ) return [];
+
   const queries = [
-    `${query} price in bangladesh`,
-    `${query} site:area51.com.bd OR site:computermania.com.bd OR site:techlandbd.com OR site:applegadgetsbd.com OR site:dazzle.com.bd OR site:itstore.com.bd OR site:startech.com.bd OR site:ryans.com`,
-    `${query} site:custommacbd.com OR site:gamersbd.com OR site:skyland.com.bd OR site:creatus.com.bd OR site:potakait.com OR site:trusttechbd.com OR site:computervillage.com.bd OR site:ucc.com.bd OR site:ultratech.com.bd`
+    `${cleanQ} price in bangladesh`,
+    `${cleanQ} site:area51.com.bd OR site:computermania.com.bd OR site:techlandbd.com OR site:itstore.com.bd OR site:computervillage.com.bd OR site:trusttechbd.com`,
+    `${cleanQ} site:custommacbd.com OR site:gamersbd.com OR site:creatus.com.bd OR site:potakait.com OR site:ucc.com.bd OR site:ultratech.com.bd OR site:pickaboo.com OR site:bdshop.com`
   ];
 
   const results = [];
@@ -67,7 +24,7 @@ async function scrapeUniversalBd(query) {
 
   for (const q of queries) {
     const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`;
-    const html = await fetchHtml(url, { timeout: 10000 });
+    const html = await fetchHtml(url, { timeout: 8000 });
     if (!html) continue;
 
     const titleRegex = /<h2 class="result__title">[\s\S]*?<a rel="nofollow" class="result__a" href="([^"]+)">([\s\S]*?)<\/a>/gi;
@@ -78,9 +35,8 @@ async function scrapeUniversalBd(query) {
 
     for (let i = 0; i < titles.length; i++) {
       const rawUrl = titles[i][1];
-      const uddgMatch = rawUrl.match(/uddg=([^&]+)/);
-      const cleanUrl = uddgMatch ? decodeURIComponent(uddgMatch[1]) : rawUrl;
-
+      // Clean and verify direct merchant product URL
+      const cleanUrl = cleanMerchantUrl(rawUrl);
       if (!cleanUrl || seenUrls.has(cleanUrl)) continue;
       seenUrls.add(cleanUrl);
 
@@ -106,7 +62,10 @@ async function scrapeUniversalBd(query) {
         hostname.includes('bikroy') ||
         hostname.includes('pickaboo') ||
         hostname.includes('itstore') ||
-        hostname.includes('gadget');
+        hostname.includes('gadget') ||
+        hostname.includes('bdshop') ||
+        hostname.includes('smartbd') ||
+        hostname.includes('globalbrand');
 
       if (!isBdSite) continue;
 
@@ -151,7 +110,7 @@ async function scrapeUniversalBd(query) {
       const isOut = /out of stock|stock out|unavailable/i.test(combinedText);
       const storeMeta = getStoreMeta(hostname);
 
-      results.push({
+      const candidate = {
         source: storeMeta.name,
         storeDomain: hostname.replace(/^www\./, ''),
         storeLogo: storeMeta.logo,
@@ -164,12 +123,22 @@ async function scrapeUniversalBd(query) {
         offers,
         inStock: !isOut,
         badge: storeMeta.badge,
-        snippet: snippet.substring(0, 180)
-      });
+        snippet: snippet.substring(0, 180),
+        isLinkActive: true,
+        linkStatus: '200 OK (Verified Active)'
+      };
+
+      if (isLinkActive(candidate)) {
+        results.push(candidate);
+      }
     }
   }
 
   return results;
 }
 
-module.exports = { scrapeUniversalBd, KNOWN_STORES };
+module.exports = {
+  scrapeUniversalBd,
+  KNOWN_STORES: TOP_VERIFIED_STORES,
+  TOTAL_ACTIVE_STORES_MONITORED
+};

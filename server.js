@@ -1,7 +1,6 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 const { searchAllStores } = require('./src/aggregator');
 const { KNOWN_STORES } = require('./src/scrapers/universalBd');
 
@@ -19,7 +18,7 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer(async (req, res) => {
-  // CORS headers for free API access
+  // CORS headers for universal API integration
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -30,12 +29,13 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const parsedUrl = url.parse(req.url, true);
-  const pathname = parsedUrl.pathname;
+  // Use WHATWG URL API (Node.js modern standard)
+  const reqUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  const pathname = reqUrl.pathname;
 
   // 1. REST API Search Endpoint: /api/search?q=...
   if (pathname === '/api/search') {
-    const query = parsedUrl.query.q || '';
+    const query = reqUrl.searchParams.get('q') || '';
     if (!query) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Query parameter "q" is required. E.g. /api/search?q=RTX+4060' }));

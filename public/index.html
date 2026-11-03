@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>দাম কত BD - Bangladesh 300+ Tech Price Sentinel & Deal Finder</title>
+  <meta name="description" content="বাংলাদেশর ৩০০+ টেক ওয়েবসাইট থেকে রিয়েল-টাইম সেরা মূল্য, টপ ৩ অফার ও ডিসকাউন্ট যাচাই করুন।">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Glow & Grid -->
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>দাম কত BD <span class="badge-sentinel">PRO SENTINEL</span></h1>
+          <p class="brand-subtitle">Bangladesh 300+ Tech Stores Omni-Price Scanner & Deal Hunter</p>
+        </div>
+      </div>
+      <div class="header-radar">
+        <span class="radar-dot"></span>
+        <span class="radar-text">৩০০+ বিডি সাইট লাইভ স্ক্যানার সক্রিয়</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero & Search Box -->
+  <main class="container main-content">
+    <section class="hero-section">
+      <div class="hero-badge">🇧🇩 বাংলাদেশর সর্ববৃহৎ টেক প্রাইস কম্পারিজন ইঞ্জিন</div>
+      <h2 class="hero-title">এক ক্লিকেই জানুন দেশের সর্বনিম্ন মূল্য ও সেরা অফার</h2>
+      <p class="hero-desc">StarTech, Ryans, Daraz, Skyland, TechLand, Apple Gadgets, Dazzle, Trust Computer, Computer Village সহ দেশের ৩০০+ টেক শপের রিয়েল-টাইম ডাটা।</p>
+
+      <!-- Search Bar -->
+      <form id="searchForm" class="search-box">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="প্রোডাক্ট নাম বা মডেল লিখুন (যেমন: RTX 4060, Ryzen 5 5600, iPhone 15)..." 
+            autocomplete="off"
+            autofocus
+          >
+          <button type="button" id="clearBtn" class="clear-btn" style="display:none;">✕</button>
+        </div>
+        <button type="submit" id="searchSubmitBtn" class="search-btn">
+          <span class="btn-text">দাম খুঁজুন</span>
+          <span class="btn-icon">⚡</span>
+        </button>
+      </form>
+
+      <!-- Preset Keyword Chips -->
+      <div class="keyword-presets">
+        <span class="preset-label">জনপ্রিয় সার্চ:</span>
+        <button class="chip" data-query="RTX 4060">RTX 4060</button>
+        <button class="chip" data-query="Ryzen 5 5600">Ryzen 5 5600</button>
+        <button class="chip" data-query="iPhone 15">iPhone 15</button>
+        <button class="chip" data-query="MacBook Air M2">MacBook Air M2</button>
+        <button class="chip" data-query="Logitech mouse">Logitech Mouse</button>
+        <button class="chip" data-query="Samsung Galaxy S24">Galaxy S24</button>
+        <button class="chip" data-query="Mechanical Keyboard">Mechanical Keyboard</button>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state" style="display: none;">
+      <div class="scanner-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-center">⚡</div>
+      </div>
+      <h3 class="loading-title">৩০০+ টেক ওয়েবসাইটে লাইভ স্ক্যান চলছে...</h3>
+      <p class="loading-subtitle">Star Tech, Daraz, Ryans, Skyland, TechLand, Apple Gadgets ও অন্যান্য স্টোরের দাম ও অফার সমন্বয় করা হচ্ছে</p>
+      <div class="store-ticker">
+        <span class="ticker-store">Star Tech BD</span>
+        <span class="ticker-store">Daraz Mall</span>
+        <span class="ticker-store">Ryans Computers</span>
+        <span class="ticker-store">Skyland BD</span>
+        <span class="ticker-store">Apple Gadgets BD</span>
+        <span class="ticker-store">TechLand BD</span>
+        <span class="ticker-store">Dazzle BD</span>
+        <span class="ticker-store">Computer Village</span>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" class="results-section" style="display: none;">
+
+      <!-- Market Telemetry Bar -->
+      <div class="telemetry-bar">
+        <div class="stat-card stat-lowest">
+          <span class="stat-label">সবচেয়ে কম মূল্য</span>
+          <span class="stat-value" id="statLowest">৳০</span>
+          <span class="stat-badge" id="statLowestStore">-</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">গড় বাজারদর</span>
+          <span class="stat-value" id="statAvg">৳০</span>
+          <span class="stat-sub">সারা দেশের গড় রেট</span>
+        </div>
+        <div class="stat-card stat-savings">
+          <span class="stat-label">সর্বোচ্চ সম্ভাব্য সেভিংস</span>
+          <span class="stat-value" id="statSavings">৳০</span>
+          <span class="stat-sub">গড় দামের চেয়ে কম</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">মোট প্রাপ্ত ডিল</span>
+          <span class="stat-value" id="statTotalDeals">০টি</span>
+          <span class="stat-sub" id="statScanTime">০.০ সেকেন্ডে স্ক্যান সম্পন্ন</span>
+        </div>
+      </div>
+
+      <!-- Top 3 Best Value Crown Section -->
+      <section class="podium-section">
+        <div class="section-header">
+          <span class="section-tag">🔥 শীর্ষ ৩ সর্বনিম্ন ও সেরা অফার</span>
+          <h3 class="section-title">টপ ৩ বেস্ট ভ্যালু ডিল (Top 3 Best Value Deals)</h3>
+          <p class="section-desc">সরাসরি ইন-স্টক স্ট্যাটাস, সর্বোচ্চ ক্যাশ ডিসকাউন্ট ও অফিসিয়াল ওয়ারেন্টি সহ নির্বাচিত</p>
+        </div>
+
+        <div id="top3Container" class="podium-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Filter & Controls Bar -->
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label for="storeFilter">স্টোর নির্বাচন:</label>
+          <select id="storeFilter">
+            <option value="all">সকল স্টোর (All Stores)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="stockFilter">
+            <input type="checkbox" id="stockFilter" checked> শুধু ইন-স্টক প্রোডাক্ট (In Stock Only)
+          </label>
+        </div>
+        <div class="filter-group sort-group">
+          <label for="sortBy">সর্ট করুন:</label>
+          <select id="sortBy">
+            <option value="price-asc">মূল্য: সর্বনিম্ন থেকে সর্বোচ্চ (Cheapest First)</option>
+            <option value="price-desc">মূল্য: সর্বোচ্চ থেকে সর্বনিম্ন</option>
+            <option value="discount-desc">সর্বোচ্চ ডিসকাউন্ট (%)</option>
+            <option value="relevance">সেরা মিল (Best Match)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- All Deals Grid -->
+      <section class="all-deals-section">
+        <div class="section-header-compact">
+          <h4>সকল তুলনা ও ডিল তালিকা (<span id="allDealsCount">0</span>টি ডিল)</h4>
+        </div>
+        <div id="allDealsContainer" class="deals-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Free REST API Documentation Section -->
+    <section class="api-docs-section">
+      <div class="api-docs-card">
+        <div class="api-docs-header">
+          <span class="api-tag">FREE & OPEN REST API</span>
+          <h3>আপনার যেকোনো প্রজেক্ট বা বটে ব্যবহার করুন</h3>
+          <p>আপনার ওয়েবসাইট, ডিসকর্ড বট, মোবাইল অ্যাপ বা স্ক্রিপ্টে ফ্রি বিডি প্রাইস কম্পারিজন এপিআই ইন্টিগ্রেট করুন।</p>
+        </div>
+        <div class="api-snippet">
+          <div class="snippet-header">
+            <span>GET /api/search?q=RTX+4060</span>
+            <button class="copy-btn" id="copyApiBtn">📋 কোড কপি করুন</button>
+          </div>
+          <pre><code>// JavaScript Fetch Example
+fetch('http://localhost:3000/api/search?q=RTX+4060')
+  .then(res => res.json())
+  .then(data => {
+    console.log('Top 1 Cheapest:', data.top3[0]);
+    console.log('Summary:', data.summary);
+  });</code></pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <strong>দাম কত BD</strong> &bull; Bangladesh 300+ Tech Price Sentinel
+        <p>কভার করছে: Star Tech, Ryans, Daraz, TechLand, Skyland, Apple Gadgets, Dazzle, Trust Computer, Computer Village, Creatus, Potaka IT, UCC এবং বাংলাদেশের সকল টেক স্টোর।</p>
+      </div>
+      <div class="footer-right">
+        <span>⚡ লাইভ পোর্ট: স্বয়ংক্রিয়ভাবে কনফিগারড</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

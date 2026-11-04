@@ -1,6 +1,6 @@
 # 🤖 BD Price Sentinel - 22-Category Omni-Store Parallel Agent Architecture (AGENTS.md)
 
-This document defines the agent architecture, specialized scraping roles, multi-category routing protocols, strict hardware and product specification validation rules, and anti-hallucination protocols powering **দাম কত BD (BD Price Sentinel)** across **22 Categories and 2,310+ Verified Bangladeshi E-Commerce Stores**.
+This document defines the agent architecture, specialized scraping roles, multi-category routing protocols, transparent scan audit telemetry, interactive category store exploration, and anti-hallucination protocols powering **দাম কত BD (BD Price Sentinel)** across **22 Categories and 3,000+ Verified Bangladeshi E-Commerce Stores**.
 
 ---
 
@@ -18,20 +18,20 @@ This document defines the agent architecture, specialized scraping roles, multi-
                                  └─────────────┬─────────────┘
                                                ▼
                          [Category Store Cluster Dispatcher Agent]
-                         (Loads 105+ Stores for Detected Category)
+                         (Loads 150-200+ Stores for Detected Category)
                                                │
                                  ┌─────────────┴─────────────┐
                                  ▼                           ▼
                    [Dedicated Direct Store APIs]    [Category Cluster Sweepers]
                    - StarTech, Ryans, Daraz          - Parallel multi-site search
                    - Dazzle, Apple Gadgets, Skyland  - DuckDuckGo / Search APIs
-                   - Chaldal, Rokomari, Arogga,      - 105+ Category Verified Stores
+                   - Chaldal, Rokomari, Arogga,      - 150+ Category Verified Stores
                      Shajgoj, Hatil, Apex, etc.
                                  │                           │
                                  └─────────────┬─────────────┘
                                                ▼
                               [Universal BD Web Sentinel Agent]
-                              (Sweeps all 2,310+ .bd web stores)
+                              (Sweeps all 3,000+ .bd web stores)
                                                │
                                                ▼
                         [Product & Hardware Strict Spec Verifier]
@@ -48,10 +48,15 @@ This document defines the agent architecture, specialized scraping roles, multi-
                          - Side-by-Side 3-Way Comparison Matrix
                                                │
                                                ▼
-                         [Neumorphic Dual-Theme UI Engine]
-                         - Auto-Detected Category Badge & Category Selector
-                         - 100% Solid Bold Black in Light Theme (No washed-out text)
-                         - Instant Multi-Email Price Drop Alerts
+                         [Scan Audit & Store Transparency Inspector]
+                         - Shows exact list of stores scanned for query
+                         - Store response status & live query telemetry
+                                               │
+                                               ▼
+                         [Interactive Category Store Explorer Engine]
+                         - Clickable Category Cards opening Store Directory Modal
+                         - Real-time Search, Sort by Popularity, A-Z, Domain (.com.bd)
+                         - Direct Clickable Links to every store in Bangladesh
 ```
 
 ---
@@ -61,33 +66,34 @@ This document defines the agent architecture, specialized scraping roles, multi-
 ### 1. Category Classifier & Intent Routing Agent (শ্রেণী বিন্যাস ও ইন্টেন্ট রাউটার)
 * **Goal**: Understand what kind of product the user is searching for and route queries to the correct category store cluster.
 * **Knowledge**: Maps keywords across 22 Bangladeshi e-commerce categories:
-  1. `fashion` (ফ্যাশন, শাড়ি, পাঞ্জাবি, শার্ট, পলো, থ্রি-পিস, জিন্স, জামদানি)
-  2. `electronics` (ল্যাপটপ, প্রসেসর, র‍্যাম, গ্রাফিক্স কার্ড, মনিটর, এসএসডি, ম্যাকবুক)
-  3. `grocery` (চাল, ডাল, তেল, চিনি, লবণ, মশলা, মাছ, মাংস, ডিম)
+  1. `fashion` (ফ্যাশন, শাড়ি, পাঞ্জাবি, শার্ট, পলো, থ্রি-পিস, জিন্স, জামদানি, জুয়েলারি ক্লথিং)
+  2. `electronics` (ল্যাপটপ, প্রসেসর, র‍্যাম, গ্রাফিক্স কার্ড, মনিটর, এসএসডি, ম্যাকবুক, গ্যাজেট)
+  3. `grocery` (চাল, ডাল, তেল, চিনি, লবণ, মশলা, মাছ, মাংস, ডিম, সুপারস্টোর)
   4. `pharmacy` (ওষুধ, ট্যাবলেট, সিরাপ, প্রেসক্রিপশন মেডিসিন, বিপি মেশিন, ডায়াবেটিস স্ট্রিপ)
-  5. `books` (বই, উপন্যাস, রকমারি, ইসলামিক বই, বিসিএস গাইড, পাঠ্যবই)
-  6. `furniture` (সোফা, খাট, ডাইনিং টেবিল, ওয়ারড্রোব, অফিস চেয়ার, হাতিল, অটোবি)
+  5. `books` (বই, উপন্যাস, রকমারি, ইসলামিক বই, বিসিএস গাইড, পাঠ্যবই, স্টেশনারি)
+  6. `furniture` (সোফা, খাট, ডাইনিং টেবিল, ওয়ারড্রোব, অফিস চেয়ার, হাতিল, অটোবি, হোম ডেকর)
   7. `beauty` (রূপচর্চা, সিরাম, সানস্ক্রিন, শ্যাম্পু, ময়েশ্চারাইজার, মেকআপ, লিপস্টিক)
-  8. `baby` (ডায়াপার, বেবি ফুড, সেরেল্যাক, বাচ্চাদের খেলনা, স্ট্রোলার)
-  9. `footwear` (জুতো, স্নিকার্স, স্যান্ডেল, লেদার জুতো, এপেক্স, বাটা)
-  10. `jewelry` (স্বর্ণের গহনা, রুপা, ডায়মন্ডের আংটি, ঘড়ি, চেইন)
+  8. `baby` (ডায়াপার, বেবি ফুড, সেরেল্যাক, বাচ্চাদের খেলনা, স্ট্রোলার, মা ও শিশু যত্ন)
+  9. `footwear` (জুতো, স্নিকার্স, স্যান্ডেল, লেদার জুতো, এপেক্স, বাটা, বে এম্পোরিয়াম)
+  10. `jewelry` (স্বর্ণের গহনা, রুপা, ডায়মন্ডের আংটি, ঘড়ি, চেইন, ডায়মন্ড ওয়ার্ল্ড)
   11. `organic` (সুন্দরবনের মধু, খাঁটি সরিষার তেল, বিলোনা ঘি, চিয়া সিড, কালোজিরা)
   12. `sports` (ক্রিকেট ব্যাট, ফুটবল, জার্সি, ট্রেডমিল, ডাম্বেল, ব্যাডমিন্টন র‍্যাকেট)
-  13. `automobile` (বাইক হেলমেট, বাইক পার্টস, ইঞ্জিন অয়েল, কার ড্যাশ ক্যাম)
-  14. `appliances` (রেফ্রিজারেটর, ফ্রিজ, এসি, ওয়াশিং মেশিন, ব্লেন্ডার, ওভেন)
-  15. `bags` (ট্রাভেল ব্যাগ, লাগেজ, ব্যাকপ্যাক, স্কুল ব্যাগ, লেদার ওয়ালেট)
-  16. `pets` (বিড়ালের খাবার, কুকুরের খাবার, অ্যাকোরিয়াম, পাখির খাঁচা)
-  17. `music` (গিটার, কিবোর্ড পিয়ানো, ড্রাম সেট, ভায়োলিন, হারমোনিয়াম, মাইক)
-  18. `gifts` (উপহার, ফুলের তোড়া, গোলাপ, বার্থডে কেক, চকোলেট বক্স)
-  19. `eyewear` (চশমা, সানগ্লাস, ব্লু-কাট লেন্স, কন্টাক্ট লেন্স, রে-ব্যান)
-  20. `handicrafts` (নকশী কাঁথা, পাটের ব্যাগ, মাটির পাত্র, পিতলের শোপিস, শীতল পাটি)
-  21. `hardware` (পাওয়ার ড্রিল, টুলবক্স, পানির পাম্প, সোলার প্যানেল, ইনভার্টার)
+  13. `automobile` (বাইক হেলমেট, বাইক পার্টস, ইঞ্জিন অয়েল, কার ড্যাশ ক্যাম, গিয়ারএক্স)
+  14. `appliances` (রেফ্রিজারেটর, ফ্রিজ, এসি, ওয়াশিং মেশিন, ব্লেন্ডার, ওভেন, ওয়ালটন)
+  15. `bags` (ট্রাভেল ব্যাগ, লাগেজ, ব্যাকপ্যাক, স্কুল ব্যাগ, লেদার ওয়ালেট, প্রেসিডেন্ট)
+  16. `pets` (বিড়ালের খাবার, কুকুরের খাবার, অ্যাকোরিয়াম, পাখির খাঁচা, পেটজোন)
+  17. `music` (গিটার, কিবোর্ড পিয়ানো, ড্রাম সেট, ভায়োলিন, হারমোনিয়াম, মেলোডি বিডি)
+  18. `gifts` (উপহার, ফুলের তোড়া, গোলাপ, বার্থডে কেক, চকোলেট বক্স, উপহারবিডি)
+  19. `eyewear` (চশমা, সানগ্লাস, ব্লু-কাট লেন্স, কন্টাক্ট লেন্স, রে-ব্যান, লেন্সকার্ট)
+  20. `handicrafts` (নকশী কাঁথা, পাটের ব্যাগ, মাটির পাত্র, পিতলের শোপিস, আড়ং, কারুপল্লী)
+  21. `hardware` (পাওয়ার ড্রিল, টুলবক্স, পানির পাম্প, সোলার প্যানেল, ইনভার্টার, ইনকো)
   22. `marketplace` (দারাজ, পিকাবু, অথবা, ইভ্যালি, বিক্রয় মাল্টিভেন্ডর ডিল)
-* **Fallback**: When ambiguous or multi-category, sweeps across all 2,310+ stores.
+* **Fallback**: When ambiguous or multi-category, sweeps across all 3,000+ stores.
 
 ### 2. Category Store Cluster Dispatcher Agent (ক্যাটাগরি ক্লাস্টার ডিসপ্যাচার)
-* **Goal**: Retrieve the 105+ verified stores dedicated to the detected category from `data/bangladesh_ecommerce_2000_sites.json`.
+* **Goal**: Retrieve the full list of verified stores dedicated to the detected category from `data/bangladesh_ecommerce_2000_sites.json`.
 * **Execution**: Dispatches parallel search clusters targeting the top stores and domain groups for that exact category.
+* **Audit Registry**: Records every single store queried during the session for transparent inspection.
 
 ### 3. Omni-Store Parallel Scraping & API Hub (প্যারালাল মাল্টি-স্টোর স্ক্র্যাপার হাব)
 * **Goal**: Execute real-time queries across all category stores in under 2.5 seconds using non-blocking asynchronous fetching (`Promise.allSettled`).
@@ -96,22 +102,32 @@ This document defines the agent architecture, specialized scraping roles, multi-
   2. Targeted Category Domain Queries (`site:<domain1> OR site:<domain2>`).
   3. Universal BD fallback sweep across all `.bd` domains.
 
-### 4. Hardware & Product Specification Verifier Agent (জিরো-টলারেন্স স্পেক ভেরিফায়ার)
+### 4. Interactive Category Store Explorer Agent (ক্লিকযোগ্য ক্যাটাগরি স্টোর এক্সপ্লোরার)
+* **Goal**: Allow users to click on ANY of the 22 Category Cards to open the full interactive Directory Modal.
+* **Capabilities**:
+  - Displays every store in that category with verified clickable links (`https://...` ↗).
+  - Search filter within the category to instantly find any store by name, domain, or specialty.
+  - Sorting:
+    - 🌟 **Popularity (জনপ্রিয় শীর্ষ ব্র্যান্ডসমূহ)**
+    - 🔤 **Alphabetical A to Z (নামের ক্রমানুসারে)**
+    - 🇧🇩 **Domain Type (অফিসিয়াল .com.bd / .bd আগে)**
+  - Direct Action: "Search This Store" button to run immediate queries against that merchant.
+
+### 5. Scan Audit & Transparency Inspector Agent (স্ক্যান অডিট ও লাইভ ট্র্যাকার)
+* **Goal**: Prove 100% scan integrity so the user can verify which stores were queried and their live response status.
+* **Display**:
+  - Detailed collapsible scan audit drawer under search results.
+  - Shows each store queried with badge: `REST API Live`, `Direct Scraping`, `Category Cluster Query`.
+  - Total store count matches the active category stores.
+
+### 6. Hardware & Product Specification Verifier Agent (জিরো-টলারেন্স স্পেক ভেরিফায়ার)
 * **Goal**: Eliminate hallucinations, false-positive cheap accessories, mismatched memory generations, and wrong dosages.
 * **Protocols**:
   - Memory: `DDR5` strictly disqualifies `DDR4` and `DDR3`.
   - Chipset: `B650` strictly disqualifies `B450`, `B550`, `B560`.
   - Storage: Capacity token matching (512GB strictly rejects 64GB / 256GB).
   - CPU Accessories: CPUs reject fans, heatsinks, brackets, thermal paste.
-  - Pharma: Disqualifies mismatched dosages (e.g. 500mg vs 1000mg).
   - Exact Numeric Match: Hardware and model numbers (`7600`, `5600`, `4060`, `MP225`, `M6`) must be strictly anchored.
-
-### 5. Best Value & Market Telemetry Ranker Agent (সেরা ৩ ডিল ও টেলিমেট্রি র‍্যাংকার)
-* **Goal**: Sort verified in-stock items by lowest price first and award:
-  - 🥇 Top 1 Winner (Cheapest Verified In-Stock)
-  - 🥈 Top 2 Runner-up Deal
-  - 🥉 Top 3 Budget Pick
-* **Output**: Detailed pricing comparison, average market price, maximum customer savings, and full comparison matrix.
 
 ---
 

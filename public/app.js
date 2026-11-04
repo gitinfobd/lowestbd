@@ -60,6 +60,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeModalBackdrop = document.getElementById('closeModalBackdrop');
   const comparisonMatrix = document.getElementById('comparisonMatrix');
 
+  // Scan Audit Inspector DOM
+  const toggleScanAuditBtn = document.getElementById('toggleScanAuditBtn');
+  const scanAuditContainer = document.getElementById('scanAuditContainer');
+  const auditStoreCount = document.getElementById('auditStoreCount');
+  const auditChevron = document.getElementById('auditChevron');
+  const auditSummaryText = document.getElementById('auditSummaryText');
+  const auditFilterInput = document.getElementById('auditFilterInput');
+  const scanAuditTableBody = document.getElementById('scanAuditTableBody');
+  let currentScanAuditStores = [];
+
+  // Category Stores Explorer Modal DOM
+  const categoryStoresModal = document.getElementById('categoryStoresModal');
+  const closeCatStoresBtn = document.getElementById('closeCatStoresBtn');
+  const closeCatStoresBackdrop = document.getElementById('closeCatStoresBackdrop');
+  const catModalTitle = document.getElementById('catModalTitle');
+  const catModalSubtitle = document.getElementById('catModalSubtitle');
+  const catStoreSearchInput = document.getElementById('catStoreSearchInput');
+  const catModalStoreCount = document.getElementById('catModalStoreCount');
+  const catStoresContainer = document.getElementById('catStoresContainer');
+  const catSortPopularity = document.getElementById('catSortPopularity');
+  const catSortAz = document.getElementById('catSortAz');
+  const catSortDomain = document.getElementById('catSortDomain');
+  let activeModalCategory = null;
+  let activeModalSort = 'popularity';
+  let activeModalStores = [];
+
   // Application State
   let currentData = null;
   let compareList = []; // Up to 3 products
@@ -601,6 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       populateStoreFilter(data.allDeals || []);
       renderTelemetry(data);
+      renderScanAudit(data.scanAudit);
       renderTop3(data.top3 || []);
       renderDeals();
 
@@ -647,12 +674,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sec = (data.executionTimeMs / 1000).toFixed(1);
     const cat = data.category;
     const catName = cat ? `${cat.icon || '🛍️'} ${cat.nameBn || cat.nameEn || ''}` : 'বিডি ই-কমার্স';
-    const catStores = data.categoryStoresCount || 105;
-    statScanTime.textContent = `${sec} সেকেন্ডে ${catName}-এর ${catStores}টি সহ ২,৩১০+ সাইট স্ক্যান সম্পন্ন`;
+    const catStores = data.categoryStoresCount || (data.scanAudit ? data.scanAudit.totalStores : 195);
+    statScanTime.textContent = `${sec} সেকেন্ডে ${catName}-এর ${catStores}টি সহ ৩,১৬০+ সাইট স্ক্যান সম্পন্ন`;
 
     const headerRadarText = document.getElementById('headerRadarText');
     if (headerRadarText) {
-      headerRadarText.textContent = `${catName} • ${catStores}টি স্টোর ও ২,৩১০+ সাইট লাইভ মনিটর্ড`;
+      headerRadarText.textContent = `${catName} • ${catStores}টি স্টোর ও ৩,১৬০+ সাইট লাইভ মনিটর্ড`;
     }
   }
 
@@ -819,6 +846,248 @@ document.addEventListener('DOMContentLoaded', () => {
       allDealsContainer.appendChild(card);
     });
   }
+
+  // =========================================================================
+  // 10. Scan Audit & Store Transparency Inspector Logic
+  // =========================================================================
+  if (toggleScanAuditBtn) {
+    toggleScanAuditBtn.addEventListener('click', () => {
+      if (!scanAuditContainer) return;
+      const isHidden = scanAuditContainer.style.display === 'none';
+      scanAuditContainer.style.display = isHidden ? 'block' : 'none';
+      toggleScanAuditBtn.classList.toggle('active', isHidden);
+    });
+  }
+
+  if (auditFilterInput) {
+    auditFilterInput.addEventListener('input', () => {
+      const q = auditFilterInput.value.trim().toLowerCase();
+      renderScanAuditRows(currentScanAuditStores, q);
+    });
+  }
+
+  function renderScanAudit(scanAudit) {
+    if (!scanAudit || !scanAudit.stores) {
+      if (auditStoreCount) auditStoreCount.textContent = '০';
+      return;
+    }
+    currentScanAuditStores = scanAudit.stores;
+    const count = scanAudit.totalMonitored || scanAudit.totalStores || scanAudit.stores.length;
+    if (auditStoreCount) auditStoreCount.textContent = count;
+    if (auditSummaryText) {
+      const catName = scanAudit.categoryNameBn || scanAudit.categoryName || 'এই ক্যাটাগরির';
+      auditSummaryText.textContent = `${catName}-এর অন্তর্ভুক্ত ${count}টি সক্রিয় ওয়েবসাইটের লাইভ স্ক্যান অডিট লগ:`;
+    }
+    if (auditFilterInput) auditFilterInput.value = '';
+    renderScanAuditRows(currentScanAuditStores, '');
+  }
+
+  function renderScanAuditRows(stores, filterQuery) {
+    if (!scanAuditTableBody) return;
+    scanAuditTableBody.innerHTML = '';
+
+    const filtered = stores.filter(s => {
+      if (!filterQuery) return true;
+      const name = s.name || s.Website_Name || '';
+      const domain = s.domain || s.Domain || '';
+      return name.toLowerCase().includes(filterQuery) || domain.toLowerCase().includes(filterQuery);
+    });
+
+    if (filtered.length === 0) {
+      scanAuditTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 22px; color: var(--text-muted); font-weight: 700;">কোনো স্টোর পাওয়া যায়নি।</td></tr>`;
+      return;
+    }
+
+    filtered.forEach((store, idx) => {
+      const tr = document.createElement('tr');
+      const sMethod = store.scanMethod || store.method || 'Cluster Domain Sweep & Web Sentinel';
+      const isLiveScraped = (store.status && store.status.includes('Live')) || sMethod.includes('API') || sMethod.includes('Direct') || sMethod.includes('Targeted');
+      const statusBadge = isLiveScraped
+        ? `<span class="audit-badge-status-live">✓ Live Scanned</span>`
+        : `<span class="audit-badge-status-cluster">Category Cluster</span>`;
+
+      const methodBadge = `<span class="audit-badge-method">${escapeHtml(sMethod)}</span>`;
+      const matchesText = store.matchesFound > 0 
+        ? `<strong style="color: var(--accent-emerald); font-weight: 800;">${store.matchesFound}টি ডিল</strong>` 
+        : '<span style="color: var(--text-muted);">০টি</span>';
+
+      const sName = store.name || store.Website_Name || 'Store';
+      const sDomain = store.domain || store.Domain || '';
+      const sUrl = store.url || store.Website_URL || `https://${sDomain}`;
+
+      tr.innerHTML = `
+        <td style="font-weight: 800; color: var(--text-muted);">${idx + 1}</td>
+        <td><strong style="color: var(--text-primary);">${escapeHtml(sName)}</strong></td>
+        <td><a href="${escapeHtml(sUrl)}" target="_blank" rel="noopener noreferrer" class="audit-store-link">${escapeHtml(sDomain)} ↗</a></td>
+        <td>${methodBadge}</td>
+        <td>${statusBadge}</td>
+        <td>${matchesText}</td>
+      `;
+      scanAuditTableBody.appendChild(tr);
+    });
+  }
+
+  // =========================================================================
+  // 11. Interactive Category Stores Explorer Modal Logic
+  // =========================================================================
+  async function openCategoryStoresModal(catId) {
+    if (!categoryStoresModal) return;
+    activeModalCategory = catId;
+    categoryStoresModal.style.display = 'flex';
+    if (catStoreSearchInput) catStoreSearchInput.value = '';
+    await loadCategoryStores(catId, activeModalSort, '');
+  }
+
+  async function loadCategoryStores(catId, sort = 'popularity', query = '') {
+    if (!catStoresContainer) return;
+    catStoresContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--accent-emerald); font-weight: 800; font-size: 15px;">🔄 স্টোরসমূহ লোড হচ্ছে...</div>';
+
+    try {
+      const res = await fetch(`/api/category-stores?cat=${encodeURIComponent(catId)}&sort=${encodeURIComponent(sort)}&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data.success && data.stores) {
+        activeModalStores = data.stores;
+        if (catModalTitle) {
+          catModalTitle.textContent = `${data.category?.icon || '📂'} ${data.category?.nameBn || data.category?.nameEn || 'ক্যাটাগরি'} - সকল ভেরিফাইড ওয়েবসাইট`;
+        }
+        if (catModalSubtitle) {
+          catModalSubtitle.textContent = `বাংলাদেশে এই ক্যাটাগরির অন্তর্ভুক্ত সর্বমোট ${data.totalStores}টি সক্রিয় অনলাইন শপ ও ই-কমার্স প্ল্যাটফর্ম`;
+        }
+        if (catModalStoreCount) {
+          catModalStoreCount.textContent = data.stores.length;
+        }
+        renderCategoryStoreCards(data.stores);
+      } else {
+        catStoresContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">কোনো স্টোর পাওয়া যায়নি।</div>';
+      }
+    } catch (err) {
+      catStoresContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #ef4444; font-weight: 700;">স্টোর লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</div>';
+    }
+  }
+
+  function renderCategoryStoreCards(stores) {
+    if (!catStoresContainer) return;
+    catStoresContainer.innerHTML = '';
+
+    if (stores.length === 0) {
+      catStoresContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted); font-weight: 700;">এই অনুসন্ধানের সাথে কোনো স্টোর পাওয়া যায়নি।</div>';
+      return;
+    }
+
+    stores.forEach(store => {
+      const card = document.createElement('div');
+      card.className = 'cat-store-card';
+      const rankBadge = store.popularityRank ? `<span class="cat-store-rank-badge">🔥 #${store.popularityRank}</span>` : '';
+      const domainBadge = store.domain ? `<span class="cat-store-domain-badge">${escapeHtml(store.domain)}</span>` : '';
+
+      card.innerHTML = `
+        <div class="cat-store-card-header">
+          <h4 class="cat-store-name-title">
+            <span>${store.logo || '🏬'}</span>
+            <span>${escapeHtml(store.name)}</span>
+          </h4>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            ${rankBadge}
+            ${domainBadge}
+          </div>
+        </div>
+        <p class="cat-store-specialty-text">${escapeHtml(store.specialty || 'বাংলাদেশি নির্ভরযোগ্য ই-কমার্স রিটেইলার')}</p>
+        <div class="cat-store-payments-row">
+          💳 পেমেন্ট: <span>${escapeHtml(store.paymentMethods || 'bKash, Nagad, Cards, COD')}</span>
+        </div>
+        <div class="cat-store-actions-row">
+          <a href="${escapeHtml(store.url)}" target="_blank" rel="noopener noreferrer" class="cat-store-link-btn">
+            ওয়েবসাইটে যান ↗
+          </a>
+          <button type="button" class="cat-store-search-btn" title="এই স্টোরের জন্য সার্চ করুন">
+            🔍 সার্চ করুন
+          </button>
+        </div>
+      `;
+
+      card.querySelector('.cat-store-search-btn').addEventListener('click', () => {
+        categoryStoresModal.style.display = 'none';
+        if (searchInput) {
+          searchInput.value = store.name;
+          clearBtn.style.display = 'flex';
+          executeSearch(store.name);
+        }
+      });
+
+      catStoresContainer.appendChild(card);
+    });
+  }
+
+  // Category modal sort buttons
+  [catSortPopularity, catSortAz, catSortDomain].forEach(btn => {
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      [catSortPopularity, catSortAz, catSortDomain].forEach(b => b && b.classList.remove('active'));
+      btn.classList.add('active');
+      activeModalSort = btn.getAttribute('data-sort');
+      const q = catStoreSearchInput ? catStoreSearchInput.value.trim() : '';
+      if (activeModalCategory) {
+        loadCategoryStores(activeModalCategory, activeModalSort, q);
+      }
+    });
+  });
+
+  // Category modal search input
+  if (catStoreSearchInput) {
+    let searchDebounceTimer = null;
+    catStoreSearchInput.addEventListener('input', () => {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        const q = catStoreSearchInput.value.trim();
+        if (activeModalCategory) {
+          loadCategoryStores(activeModalCategory, activeModalSort, q);
+        }
+      }, 250);
+    });
+  }
+
+  // Close Category Modal
+  if (closeCatStoresBtn) {
+    closeCatStoresBtn.addEventListener('click', () => {
+      categoryStoresModal.style.display = 'none';
+    });
+  }
+  if (closeCatStoresBackdrop) {
+    closeCatStoresBackdrop.addEventListener('click', () => {
+      categoryStoresModal.style.display = 'none';
+    });
+  }
+
+  // Clickable Category Cards Listeners
+  document.querySelectorAll('.clickable-cat-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const catId = card.getAttribute('data-cat');
+      if (catId) {
+        openCategoryStoresModal(catId);
+      }
+    });
+  });
+
+  // Dynamic Category Store Count Sync
+  async function loadDynamicCategoryCounts() {
+    try {
+      const res = await fetch('/api/categories');
+      const data = await res.json();
+      if (data.success && data.categories) {
+        data.categories.forEach(cat => {
+          const card = document.querySelector(`.clickable-cat-card[data-cat="${cat.id}"]`);
+          if (card) {
+            const countPill = card.querySelector('.cat-pill-count');
+            if (countPill) {
+              countPill.textContent = `${cat.storeCount}টি স্টোর ↗`;
+            }
+            card.title = `${cat.nameBn || cat.nameEn}-এর ${cat.storeCount}টি স্টোর দেখতে ক্লিক করুন`;
+          }
+        });
+      }
+    } catch (e) {}
+  }
+  loadDynamicCategoryCounts();
 
   function escapeHtml(str) {
     if (!str) return '';

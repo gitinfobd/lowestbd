@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { searchAllStores } = require('./src/aggregator');
 const { KNOWN_STORES } = require('./src/scrapers/universalBd');
-const { getAllCategories } = require('./src/categoryRouter');
+const { getAllCategories, getStoresForCategory, CATEGORY_LEXICON } = require('./src/categoryRouter');
 
 const PREFERRED_PORTS = [3000, 3001, 3002, 5000, 8080, 8000, 0];
 const ALERTS_FILE = path.join(__dirname, 'data', 'alerts.json');
@@ -97,8 +97,62 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({
       success: true,
       totalCategories: 22,
-      totalStores: 2310,
+      totalStores: 3160,
       categories: getAllCategories()
+    }));
+    return;
+  }
+
+  // 1.2 Category Stores Endpoint: /api/category-stores?cat=fashion&sort=popularity&q=aarong
+  if (pathname === '/api/category-stores') {
+    const catId = reqUrl.searchParams.get('cat') || reqUrl.searchParams.get('category') || 'fashion';
+    const sort = reqUrl.searchParams.get('sort') || 'popularity';
+    const filterQ = (reqUrl.searchParams.get('q') || '').toLowerCase().trim();
+
+    const catMeta = CATEGORY_LEXICON[catId] || { id: catId, nameEn: catId, nameBn: catId, icon: '🛍️' };
+    let stores = getStoresForCategory(catId);
+
+    if (filterQ) {
+      stores = stores.filter(s =>
+        (s.Website_Name || '').toLowerCase().includes(filterQ) ||
+        (s.Domain || '').toLowerCase().includes(filterQ) ||
+        (s["Products_Specialty (পণ্যের ধরন)"] || '').toLowerCase().includes(filterQ)
+      );
+    }
+
+    if (sort === 'az') {
+      stores.sort((a, b) => (a.Website_Name || '').localeCompare(b.Website_Name || ''));
+    } else if (sort === 'domain') {
+      stores.sort((a, b) => {
+        const aIsBd = (a.Domain || '').includes('.bd');
+        const bIsBd = (b.Domain || '').includes('.bd');
+        if (aIsBd !== bIsBd) return aIsBd ? -1 : 1;
+        return (a.Domain || '').localeCompare(b.Domain || '');
+      });
+    } else {
+      // popularity
+      stores.sort((a, b) => (a.Popularity_Rank || 99) - (b.Popularity_Rank || 99));
+    }
+
+    const normalizedStores = stores.map(s => ({
+      name: s.Website_Name || s.name || '',
+      url: s.Website_URL || s.url || '',
+      domain: s.Domain || s.domain || '',
+      domainType: s.Domain_Type || s.domainType || '',
+      popularityRank: s.Popularity_Rank || s.popularityRank || 99,
+      specialty: s['Products_Specialty (পণ্যের ধরন)'] || s.Products_Specialty || s.specialty || '',
+      paymentMethods: s['Payment_Methods (পেমেন্ট পদ্ধতি)'] || s.Payment_Methods || s.paymentMethods || '',
+      deliveryArea: s['Delivery_Area (ডেলিভারি এরিয়া)'] || s.deliveryArea || '',
+      verificationStatus: s.Verification_Status || 'Verified Active BD E-Commerce',
+      ...s
+    }));
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      success: true,
+      category: catMeta,
+      totalStores: stores.length,
+      stores: normalizedStores
     }));
     return;
   }

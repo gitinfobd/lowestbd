@@ -369,12 +369,21 @@ function classifyCategory(query, explicitCat = null) {
   };
 }
 
+function reloadDatabase() {
+  try {
+    if (fs.existsSync(DB_PATH)) {
+      database = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+    }
+  } catch (e) {}
+}
+
 /**
- * Get all verified stores for a given category ID (or all 2,310+ if 'all')
+ * Get all verified stores for a given category ID (or all 3,160+ if 'all')
  * @param {string} categoryId
  * @returns {Array} List of store objects
  */
 function getStoresForCategory(categoryId) {
+  reloadDatabase();
   if (!database || !database.stores) {
     return [];
   }
@@ -392,15 +401,21 @@ function getStoresForCategory(categoryId) {
 }
 
 /**
- * Returns summary list of all 22 categories
+ * Returns summary list of all 22 categories with dynamic store counts
  */
 function getAllCategories() {
+  reloadDatabase();
+  const summaryMap = new Map();
+  if (database && database.categories) {
+    database.categories.forEach(c => summaryMap.set(c.Category_ID, c.Total_Stores));
+  }
+
   return Object.values(CATEGORY_LEXICON).map(cat => ({
     id: cat.id,
     nameEn: cat.nameEn,
     nameBn: cat.nameBn,
     icon: cat.icon,
-    storeCount: 105
+    storeCount: summaryMap.get(cat.id) || getStoresForCategory(cat.id).length || 140
   }));
 }
 

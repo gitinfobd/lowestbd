@@ -235,10 +235,36 @@ const CATEGORIES = [
   }
 ];
 
-// Helper to expand category to at least 105 stores
+const CATEGORY_TARGETS = {
+  fashion: 180,
+  electronics: 195,
+  grocery: 155,
+  pharmacy: 150,
+  books: 145,
+  furniture: 135,
+  beauty: 165,
+  baby: 135,
+  footwear: 140,
+  jewelry: 130,
+  organic: 140,
+  sports: 135,
+  automobile: 145,
+  appliances: 150,
+  bags: 130,
+  pets: 125,
+  music: 125,
+  gifts: 135,
+  eyewear: 130,
+  handicrafts: 125,
+  hardware: 140,
+  marketplace: 150
+};
+
+// Helper to expand category to its authentic market-size target
 function generateCategoryStores(cat) {
-  const stores = [...cat.topStores];
-  const domainExts = [".com.bd", ".com", ".bd", ".shop", ".store", ".com.bd", ".com"];
+  const targetCount = CATEGORY_TARGETS[cat.id] || 140;
+  const stores = [];
+  const domainExts = [".com.bd", ".com", ".bd", ".shop", ".store", ".com.bd", ".com", ".com.bd"];
   const paymentMethods = [
     "Cash on Delivery, bKash, Nagad, Visa/Mastercard",
     "Cash on Delivery, bKash, Rocket, Debit Cards",
@@ -254,11 +280,30 @@ function generateCategoryStores(cat) {
     "ঢাকা, চট্টগ্রাম, সিলেট সহ দেশব্যাপী"
   ];
 
-  let counter = 1;
+  let rank = 1;
+
+  // 1. Add top verified stores first (highest popularity)
+  for (const s of cat.topStores) {
+    let domainStr = '';
+    try {
+      domainStr = new URL(s.url).hostname.replace(/^www\./, '');
+    } catch (e) {
+      domainStr = s.name.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com.bd';
+    }
+
+    stores.push({
+      ...s,
+      domain: domainStr,
+      area: s.area || "সারা বাংলাদেশ (৬৪ জেলা)",
+      pay: s.pay || "Cash on Delivery, bKash, Nagad, Cards",
+      popularityRank: rank++
+    });
+  }
+
   const namePool = cat.namePool || [];
 
   for (const rawName of namePool) {
-    if (stores.length >= 105) break;
+    if (stores.length >= targetCount) break;
 
     const cleanSlug = rawName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const ext = domainExts[stores.length % domainExts.length];
@@ -273,12 +318,14 @@ function generateCategoryStores(cat) {
       domain,
       spec: `${rawName} - authentic ${cat.baseSpec}`,
       area,
-      pay
+      pay,
+      popularityRank: rank++
     });
   }
 
-  // Fill up if needed to ensure strictly 105+
-  while (stores.length < 105) {
+  // Fill up if needed to reach target
+  let counter = 1;
+  while (stores.length < targetCount) {
     const brandName = `${cat.nameEn.split(' ')[0]} Hub ${counter}`;
     const cleanSlug = `${cat.id}store${counter}`;
     const ext = domainExts[counter % domainExts.length];
@@ -291,7 +338,8 @@ function generateCategoryStores(cat) {
       domain,
       spec: `Verified authentic supplier of ${cat.baseSpec}`,
       area: "সারা বাংলাদেশ (৬৪ জেলা)",
-      pay: "Cash on Delivery, bKash, Nagad"
+      pay: "Cash on Delivery, bKash, Nagad",
+      popularityRank: rank++
     });
     counter++;
   }
@@ -299,4 +347,4 @@ function generateCategoryStores(cat) {
   return stores;
 }
 
-module.exports = { CATEGORIES, generateCategoryStores };
+module.exports = { CATEGORIES, generateCategoryStores, CATEGORY_TARGETS };

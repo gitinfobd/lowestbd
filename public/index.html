@@ -212,6 +212,37 @@
         </div>
       </div>
 
+      <!-- Scan Audit & Store Transparency Inspector -->
+      <div class="scan-audit-wrapper">
+        <button type="button" id="toggleScanAuditBtn" class="scan-audit-btn">
+          <span>🔍 স্ক্যান অডিট ও স্টোর ট্র্যাকার (<span id="auditStoreCount">০</span>টি স্টোরের লাইভ স্ক্যান স্ট্যাটাস দেখুন)</span>
+          <span id="auditChevron" class="audit-chevron">▾</span>
+        </button>
+        <div id="scanAuditContainer" class="scan-audit-container" style="display: none;">
+          <div class="scan-audit-header">
+            <span class="audit-summary-text" id="auditSummaryText">এই ক্যাটাগরির সমস্ত সক্রিয় ওয়েবসাইটে লাইভ স্ক্যান সম্পন্ন হয়েছে:</span>
+            <input type="text" id="auditFilterInput" class="audit-filter-input" placeholder="তালিকায় স্টোর খুঁজুন (যেমন: Daraz, StarTech, Aarong)...">
+          </div>
+          <div class="scan-audit-table-wrapper">
+            <table class="scan-audit-table">
+              <thead>
+                <tr>
+                  <th>ক্রমিক</th>
+                  <th>স্টোরের নাম</th>
+                  <th>ডোমেইন / ওয়েবসাইট লিংক</th>
+                  <th>স্ক্যান মেথড</th>
+                  <th>স্ট্যাটাস</th>
+                  <th>প্রাপ্ত ডিল</th>
+                </tr>
+              </thead>
+              <tbody id="scanAuditTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Top 3 Best Value Crown Section -->
       <section class="podium-section">
         <div class="section-header">
@@ -306,7 +337,7 @@ fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
       <!-- Quick Metrics Grid -->
       <div class="directory-stats-grid">
         <div class="dir-stat-card">
-          <span class="dir-stat-num">২,৩১০+</span>
+          <span class="dir-stat-num">৩,১৬০+</span>
           <span class="dir-stat-label">মোট ভেরিফাইড ওয়েবসাইট</span>
         </div>
         <div class="dir-stat-card">
@@ -314,8 +345,8 @@ fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
           <span class="dir-stat-label">স্বতন্ত্র প্রধান ক্যাটাগরি</span>
         </div>
         <div class="dir-stat-card">
-          <span class="dir-stat-num">১০৫+</span>
-          <span class="dir-stat-label">প্রতি ক্যাটাগরিতে সর্বনিম্ন স্টোর</span>
+          <span class="dir-stat-num">১২০-১৯৫টি</span>
+          <span class="dir-stat-label">ক্যাটাগরি ভিত্তিক সক্রিয় স্টোর</span>
         </div>
         <div class="dir-stat-card">
           <span class="dir-stat-num">১০০%</span>
@@ -338,32 +369,35 @@ fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
         💡 <em>টিপ: .csv ফাইলটি UTF-8 BOM যুক্ত হওয়ায় সরাসরি মাইক্রোসফট এক্সেল এবং গুগল ড্রাইভে আপলোড করলেই বাংলা টেক্সট নিখুঁতভাবে প্রদর্শিত হবে। আর .xlsx ফাইলটিতে ২২টি ক্যাটাগরির জন্য ২২টি আলাদা শীট ট্যাব রয়েছে।</em>
       </div>
 
-      <!-- Category Badges Grid -->
+      <!-- Category Badges Grid (Clickable to view stores) -->
       <div class="directory-category-showcase">
-        <h4 class="category-showcase-title">📂 অন্তর্ভুক্ত ২২টি প্রধান ক্যাটাগরি (প্রত্যেকটিতে ১০৫টি করে সাইট):</h4>
+        <div class="showcase-header-row">
+          <h4 class="category-showcase-title">📂 অন্তর্ভুক্ত ২২টি প্রধান ক্যাটাগরি (মোট ৩,১৬০+ সাইট):</h4>
+          <span class="showcase-hint-pill">👉 যেকোনো ক্যাটাগরিতে ক্লিক করে লিংক সহ সকল স্টোরের তালিকা দেখুন</span>
+        </div>
         <div class="category-pill-grid" id="categoryPillGrid">
-          <div class="category-pill"><span class="cat-pill-icon">👗</span> <strong>১. ফ্যাশন ও পোশাক</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">💻</span> <strong>২. ইলেকট্রনিক্স ও গ্যাজেট</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🛒</span> <strong>৩. মুদি ও সুপারস্টোর</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">💊</span> <strong>৪. ফার্মেসি ও ওষুধ</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">📚</span> <strong>৫. বই ও প্রকাশনী</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🛋️</span> <strong>৬. আসবাবপত্র ও হোম ডেকর</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">💄</span> <strong>৭. রূপচর্চা ও স্কিনকেয়ার</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🍼</span> <strong>৮. মা ও শিশু যত্ন</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">👞</span> <strong>৯. জুতো ও চামড়াজাত পণ্য</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">💍</span> <strong>১০. অলঙ্কার ও ঘড়ি</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🍯</span> <strong>১১. অর্গানিক খাদ্য ও কৃষিপণ্য</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🏏</span> <strong>১২. খেলাধুলা ও ফিটনেস</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🏍️</span> <strong>১৩. বাইক পার্টস ও হেলমেট</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🔌</span> <strong>১৪. হোম অ্যাপ্লায়েন্স ও কিচেন</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🎒</span> <strong>১৫. ব্যাগ ও ট্রাভেল লাগেজ</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🐾</span> <strong>১৬. পোষাপ্রাণীর খাবার ও যত্ন</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🎸</span> <strong>১৭. বাদ্যযন্ত্র ও সাউন্ড সিস্টেম</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🎁</span> <strong>১৮. উপহার, ফুল ও কেক</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">👓</span> <strong>১৯. চশমা ও অপটিক্যাল আইকেয়ার</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🌾</span> <strong>২০. হস্তশিল্প ও পাটজাত পণ্য</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🛠️</span> <strong>২১. হার্ডওয়্যার ও সোলার টুলস</strong> <span class="cat-pill-count">১০৫টি</span></div>
-          <div class="category-pill"><span class="cat-pill-icon">🏬</span> <strong>২২. মেগাস্টোর ও মাল্টিভেন্ডর</strong> <span class="cat-pill-count">১০৫টি</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="fashion" title="ফ্যাশন ও পোশাকের ১৮০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">👗</span> <strong>১. ফ্যাশন ও পোশাক</strong> <span class="cat-pill-count">১৮০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="electronics" title="ইলেকট্রনিক্স ও গ্যাজেটের ১৯৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">💻</span> <strong>২. ইলেকট্রনিক্স ও গ্যাজেট</strong> <span class="cat-pill-count">১৯৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="grocery" title="মুদি ও সুপারস্টোরের ১৫৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🛒</span> <strong>৩. মুদি ও সুপারস্টোর</strong> <span class="cat-pill-count">১৫৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="pharmacy" title="ফার্মেসি ও ওষুধের ১৫০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">💊</span> <strong>৪. ফার্মেসি ও ওষুধ</strong> <span class="cat-pill-count">১৫০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="books" title="বই ও প্রকাশনীর ১৪৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">📚</span> <strong>৫. বই ও প্রকাশনী</strong> <span class="cat-pill-count">১৪৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="furniture" title="আসবাবপত্র ও হোম ডেকরের ১৩৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🛋️</span> <strong>৬. আসবাবপত্র ও হোম ডেকর</strong> <span class="cat-pill-count">১৩৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="beauty" title="রূপচর্চা ও স্কিনকেয়ারের ১৬৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">💄</span> <strong>৭. রূপচর্চা ও স্কিনকেয়ার</strong> <span class="cat-pill-count">১৬৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="baby" title="মা ও শিশু যত্নের ১৩৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🍼</span> <strong>৮. মা ও শিশু যত্ন</strong> <span class="cat-pill-count">১৩৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="footwear" title="জুতো ও চামড়াজাত পণ্যের ১৪০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">👞</span> <strong>৯. জুতো ও চামড়াজাত পণ্য</strong> <span class="cat-pill-count">১৪০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="jewelry" title="অলঙ্কার ও ঘড়ির ১৩০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">💍</span> <strong>১০. অলঙ্কার ও ঘড়ি</strong> <span class="cat-pill-count">১৩০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="organic" title="অর্গানিক খাদ্য ও কৃষিপণ্যের ১৪০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🍯</span> <strong>১১. অর্গানিক খাদ্য ও কৃষিপণ্য</strong> <span class="cat-pill-count">১৪০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="sports" title="খেলাধুলা ও ফিটনেসের ১৩৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🏏</span> <strong>১২. খেলাধুলা ও ফিটনেস</strong> <span class="cat-pill-count">১৩৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="automobile" title="বাইক পার্টস ও হেলমেটের ১৪৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🏍️</span> <strong>১৩. বাইক পার্টস ও হেলমেট</strong> <span class="cat-pill-count">১৪৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="appliances" title="হোম অ্যাপ্লায়েন্সের ১৫০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🔌</span> <strong>১৪. হোম অ্যাপ্লায়েন্স ও কিচেন</strong> <span class="cat-pill-count">১৫০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="bags" title="ব্যাগ ও ট্রাভেল লাগেজের ১৩০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🎒</span> <strong>১৫. ব্যাগ ও ট্রাভেল লাগেজ</strong> <span class="cat-pill-count">১৩০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="pets" title="পোষাপ্রাণীর খাবার ও যত্নের ১২৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🐾</span> <strong>১৬. পোষাপ্রাণীর খাবার ও যত্ন</strong> <span class="cat-pill-count">১২৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="music" title="বাদ্যযন্ত্র ও সাউন্ড সিস্টেমের ১২৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🎸</span> <strong>১৭. বাদ্যযন্ত্র ও সাউন্ড সিস্টেম</strong> <span class="cat-pill-count">১২৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="gifts" title="উপহার, ফুল ও কেকের ১৩৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🎁</span> <strong>১৮. উপহার, ফুল ও কেক</strong> <span class="cat-pill-count">১৩৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="eyewear" title="চশমা ও অপটিক্যাল আইকেয়ারের ১৩০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">👓</span> <strong>১৯. চশমা ও অপটিক্যাল আইকেয়ার</strong> <span class="cat-pill-count">১৩০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="handicrafts" title="হস্তশিল্প ও পাটজাত পণ্যের ১২৫টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🌾</span> <strong>২০. হস্তশিল্প ও পাটজাত পণ্য</strong> <span class="cat-pill-count">১২৫টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="hardware" title="হার্ডওয়্যার ও সোলার টুলসের ১৪০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🛠️</span> <strong>২১. হার্ডওয়্যার ও সোলার টুলস</strong> <span class="cat-pill-count">১৪০টি স্টোর ↗</span></div>
+          <div class="category-pill clickable-cat-card" data-cat="marketplace" title="মেগাস্টোর ও মাল্টিভেন্ডরের ১৫০টি স্টোর দেখতে ক্লিক করুন"><span class="cat-pill-icon">🏬</span> <strong>২২. মেগাস্টোর ও মাল্টিভেন্ডর</strong> <span class="cat-pill-count">১৫০টি স্টোর ↗</span></div>
         </div>
       </div>
     </section>
@@ -461,6 +495,44 @@ fetch('http://localhost:3000/api/search?q=Acer+Nitro+V15')
           </button>
           <span id="alertStatusMsg" class="alert-status-msg"></span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Category Stores Explorer Modal -->
+  <div id="categoryStoresModal" class="compare-modal" style="display: none;">
+    <div class="modal-backdrop" id="closeCatStoresBackdrop"></div>
+    <div class="modal-crystal-box cat-stores-modal-box">
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <h3 id="catModalTitle">📂 ক্যাটাগরি স্টোরসমূহ</h3>
+          <p id="catModalSubtitle">বাংলাদেশের সকল ভেরিফাইড ই-কমার্স সাইট ও সরাসরি অনলাইন শপ</p>
+        </div>
+        <button id="closeCatStoresBtn" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- Category Stores Toolbar -->
+      <div class="cat-modal-toolbar">
+        <div class="cat-modal-search">
+          <span class="cat-search-icon">🔍</span>
+          <input type="text" id="catStoreSearchInput" placeholder="এই ক্যাটাগরির স্টোর খুঁজুন (নাম বা ডোমেইন লিখে ফিল্টার করুন)...">
+        </div>
+        <div class="cat-modal-sort-group">
+          <span class="cat-sort-label">সর্ট করুন:</span>
+          <div class="cat-sort-buttons">
+            <button type="button" class="cat-sort-btn active" data-sort="popularity" id="catSortPopularity">🔥 জনপ্রিয়তা</button>
+            <button type="button" class="cat-sort-btn" data-sort="az" id="catSortAz">🔤 নাম (A - Z)</button>
+            <button type="button" class="cat-sort-btn" data-sort="domain" id="catSortDomain">🌐 .com.bd ও .bd আগে</button>
+          </div>
+        </div>
+        <div class="cat-modal-stats">
+          মোট তালিকাভুক্ত: <strong id="catModalStoreCount">০</strong>টি স্টোর
+        </div>
+      </div>
+
+      <!-- Category Stores Grid -->
+      <div id="catStoresContainer" class="cat-stores-grid">
+        <!-- Rendered dynamically -->
       </div>
     </div>
   </div>

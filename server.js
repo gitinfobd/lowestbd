@@ -362,4 +362,8 @@ function startServerOnFreePort(index = 0) {
   });
 }
 
-startServerOnFreePort(0);
+module.exports = server;
+
+if (require.main === module) {
+  startServerOnFreePort(0);
+}

@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const inspectedPrice = document.getElementById('inspectedPrice');
   const inspectedStoreName = document.getElementById('inspectedStoreName');
   const inspectedLink = document.getElementById('inspectedLink');
+  const inspectedKeywords = document.getElementById('inspectedKeywords');
+  const inspectedSavingsBadge = document.getElementById('inspectedSavingsBadge');
 
   // Telemetry DOM
   const statLowest = document.getElementById('statLowest');
@@ -613,14 +615,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      if (data.inspectedProduct) {
+      if (data.inspectedProduct || data.isUrlInput) {
         inspectedBox.style.display = 'block';
-        inspectedTitle.textContent = data.inspectedProduct.title;
-        inspectedStoreName.textContent = data.inspectedProduct.source;
-        inspectedPrice.textContent = data.inspectedProduct.price > 0 
-          ? `৳${data.inspectedProduct.price.toLocaleString()}` 
+        const p = data.inspectedProduct || {};
+        inspectedTitle.textContent = p.title || data.extractedKeywords || query;
+        inspectedStoreName.textContent = p.source || 'পেস্ট করা স্টোর';
+        inspectedPrice.textContent = (p.price && p.price > 0) 
+          ? `৳${p.price.toLocaleString()}` 
           : 'স্টোরে বিস্তারিত দেখুন';
-        inspectedLink.href = data.inspectedProduct.link;
+        inspectedLink.href = p.link || query;
+
+        if (inspectedKeywords) {
+          inspectedKeywords.textContent = data.extractedKeywords || data.distilledQuery || query;
+        }
+
+        if (inspectedSavingsBadge) {
+          if (data.savingsVsPastedStore && data.savingsVsPastedStore > 0) {
+            inspectedSavingsBadge.style.display = 'inline-block';
+            inspectedSavingsBadge.textContent = `🎉 অন্য স্টোরে ৳${data.savingsVsPastedStore.toLocaleString()} কমে পাওয়া যাচ্ছে!`;
+          } else {
+            inspectedSavingsBadge.style.display = 'none';
+          }
+        }
       } else {
         inspectedBox.style.display = 'none';
       }

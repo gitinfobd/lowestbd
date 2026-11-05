@@ -63,29 +63,27 @@ function extractChipset(str) {
 
 /**
  * Distill a long product title, URL, or raw search string into optimal search keywords
+ * Preserves natural word order so search engines return exact product matches.
  * @param {string} input
  * @returns {string}
  */
 function distillQuery(input) {
   if (!input) return '';
-  let str = input.trim();
+  const { localExtractKeywords } = require('./aiAssistant');
+  const res = localExtractKeywords(input);
+  if (res && res.canonicalQuery && res.canonicalQuery.trim().length >= 3) {
+    return res.canonicalQuery.trim();
+  }
 
-  // If input is URL, extract the slug
+  let str = input.trim();
   if (/^https?:\/\//i.test(str)) {
     try {
       const u = new URL(str);
-      const pathname = u.pathname.replace(/\/$/, '');
-      const parts = pathname.split('/').filter(Boolean);
+      const parts = u.pathname.replace(/\/$/, '').split('/').filter(Boolean);
       const slug = parts[parts.length - 1] || '';
       str = slug.replace(/[-_]+/g, ' ');
     } catch (e) {}
   }
-
-  // Clean punctuation including commas, semicolons, brackets
-  str = str.replace(/[,;()[\]{},:"'”’\\/|]/g, ' ');
-
-  // Preserve model numbers like rtx4060 -> rtx 4060, b650m -> b650m, m6 -> m6
-  str = str.replace(/([a-zA-Z]{2,})([0-9]+)/g, '$1 $2').replace(/([0-9]+)([a-zA-Z]{2,})/g, '$1 $2');
 
   const noiseRegex = /\b(15\.6["”']?|14["”']?|16["”']?|13\.3["”']?|17\.3["”']?|fhd|qhd|uhd|4k|2k|ips|oled|144hz|165hz|240hz|360hz|display|screen|model|edition|gaming|notebook|processor|graphics|dedicated|price|bd|bangladesh|buy|online|official|unofficial|brand|new|in|ram|ssd|hdd|ddr4|ddr5|nvme|pcie|gen4|gen3|rgb|wifi|bluetooth|dos|windows|win11|year|warranty|2023|2024|2025|2026)\b/gi;
 
@@ -95,31 +93,8 @@ function distillQuery(input) {
     .replace(/\s+/g, ' ')
     .trim();
 
-  const allWords = cleaned.split(/\s+/).filter(w => w.length > 1);
-
-  const primary = [];
-  const anchors = [];
-  const importantKeywords = new Set([
-    'rtx', 'gtx', 'geforce', 'radeon', 'ryzen', 'intel', 'core',
-    '4060', '4050', '3050', '4070', '4080', '4090', '5060', '5070',
-    '7600', '7600x', '5600', '5600x', '5600g', '7700', '7800x3d',
-    '7735hs', '13420h', '13620h', '14700hx', 'm1', 'm2', 'm3', 'm4',
-    'plus', 'pro', 'max', 'ultra', 'ti', 'super', 'air', 'mini', 'nitro',
-    'b650', 'b650m', 'b550', 'b450', 'b760', 'h610', 'z790',
-    'nm620', 'nm790', '980', '990', 'sn580', 'sn770', 'mp225', 'ddr5', 'ddr4'
-  ]);
-
-  for (const w of allWords) {
-    const lw = w.toLowerCase();
-    if (importantKeywords.has(lw) || /^(r[3579]|i[3579])$/i.test(lw)) {
-      anchors.push(w);
-    } else if (primary.length < 3) {
-      primary.push(w);
-    }
-  }
-
-  const combined = Array.from(new Set([...primary, ...anchors]));
-  return combined.slice(0, 5).join(' ');
+  const words = cleaned.split(/\s+/).filter(w => w.length > 1);
+  return words.slice(0, 4).join(' ');
 }
 
 /**
@@ -239,6 +214,28 @@ function calculateRelevance(rawQuery, title, price = 0) {
     const titleHasReqChip = titleTokens.some(tt => tt === reqChip || tt.startsWith(reqChip)) || titleLower.includes(mChipMatch[1].toLowerCase());
     if (!titleHasReqChip) {
       return 0; // Strict rejection: Target Apple M-chip missing in product!
+    }
+  }
+
+  // =========================================================================
+  // ZERO-TOLERANCE RULE 6.5: Laptop vs Monitor / Display Isolation & Series Lock
+  // =========================================================================
+  const isLaptopQuery = /\b(laptop|notebook|macbook|nitro|victus|omen|legion|ideapad|thinkpad|zenbook|vivobook|tuf|predator|aspire|anv15|g15|g16|zephyrus)\b/i.test(rawLower);
+  const wantsMonitor = /\b(monitor|led\s*display|ips\s*panel)\b/i.test(rawLower);
+
+  if (isLaptopQuery && !wantsMonitor) {
+    if (/\b(monitor|gaming\s*monitor|ips\s*monitor|led\s*monitor|curved\s*monitor|lcd)\b/i.test(titleLower)) {
+      return 0; // Strict rejection: A standalone monitor is NOT a laptop!
+    }
+  }
+
+  // Series enforcement (e.g. user asked for "nitro", title cannot be "aspire")
+  const seriesNames = ['nitro', 'predator', 'aspire', 'legion', 'victus', 'omen', 'tuf', 'rog', 'zenbook', 'vivobook', 'thinkpad', 'ideapad', 'macbook'];
+  for (const sn of seriesNames) {
+    if (new RegExp(`\\b${sn}\\b`, 'i').test(rawLower)) {
+      if (!new RegExp(`\\b${sn}\\b`, 'i').test(titleLower)) {
+        return 0; // Strict rejection: User asked for Nitro, title has Aspire or other series!
+      }
     }
   }
 

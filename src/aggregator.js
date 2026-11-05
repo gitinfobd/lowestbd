@@ -45,8 +45,8 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
   if (isUrl) {
     try {
       inspectedProduct = await inspectUrl(rawInput);
-      if (inspectedProduct && inspectedProduct.title) {
-        targetSearchTerm = distillQuery(inspectedProduct.title);
+      if (inspectedProduct && (inspectedProduct.canonicalQuery || inspectedProduct.title)) {
+        targetSearchTerm = inspectedProduct.canonicalQuery || distillQuery(inspectedProduct.title);
       } else {
         targetSearchTerm = distillQuery(rawInput);
       }
@@ -130,8 +130,8 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
     }
 
     if (isTechCategory) {
-      const score = calculateRelevance(rawInput, item.title, item.price);
-      if (score >= 0.45) {
+      const score = calculateRelevance(targetSearchTerm, item.title, item.price);
+      if (score >= 0.40) {
         item.relevanceScore = score;
         filtered.push(item);
       }
@@ -254,6 +254,12 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
   return {
     query: rawInput,
     distilledQuery: targetSearchTerm,
+    extractedKeywords: targetSearchTerm,
+    isUrlInput: isUrl,
+    pastedUrl: isUrl ? rawInput : null,
+    savingsVsPastedStore: (isUrl && inspectedProduct && inspectedProduct.price > 0 && top3[0] && top3[0].price > 0 && top3[0].price < inspectedProduct.price)
+      ? (inspectedProduct.price - top3[0].price)
+      : 0,
     executionTimeMs,
     category: detectedCategory,
     categoryStoresCount,

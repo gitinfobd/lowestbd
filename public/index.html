@@ -112,7 +112,7 @@
 
       <!-- URL Detect Banner -->
       <div id="urlDetectBanner" class="url-detect-banner" style="display: none;">
-        <span>🔗 <strong>প্রোডাক্ট লিঙ্ক ডিটেক্ট করা হয়েছে!</strong> স্টোর, বর্তমান মূল্য ও দেশের অন্যান্য শপের সেরা দাম অ্যানালাইজ হচ্ছে...</span>
+        <span>🌐 <strong>অমনি-ব্রাউজার সক্রিয়:</strong> প্রোডাক্ট লিঙ্ক থেকে মূল কিওয়ার্ড এক্সট্র্যাক্ট করে দেশের ৩,০০০+ স্টোরে লাইভ সার্চ করে সর্বনিম্ন দাম দেখানো হবে...</span>
       </div>
 
       <!-- Category Quick Filter Pills -->
@@ -170,20 +170,24 @@
       <!-- Inspected URL Spotlight Box (if link was searched) -->
       <div id="inspectedBox" class="inspected-crystal-box" style="display: none;">
         <div class="inspected-header">
-          <span class="inspected-tag">🔗 আপনার পেস্ট করা প্রোডাক্ট ও স্টোর</span>
+          <span class="inspected-tag">🌐 অমনি-ব্রাউজার ডিকোড ও অটো-সার্চ ইন্টিগ্রেশন</span>
           <span class="inspected-store-badge" id="inspectedStoreName">-</span>
         </div>
         <div class="inspected-content">
           <div class="inspected-info">
             <h4 id="inspectedTitle">-</h4>
+            <div class="inspected-keyword-tag-box" style="margin: 6px 0 10px 0; font-size: 13px; color: var(--accent-cyan);">
+              <span>🔍 এক্সট্র্যাক্ট করা কিওয়ার্ড: <strong id="inspectedKeywords" style="background: rgba(56, 189, 248, 0.15); padding: 2px 8px; border-radius: 6px; color: var(--accent-cyan);">-</strong></span>
+              <span style="font-size: 11px; opacity: 0.8; margin-left: 8px;">(এই কিওয়ার্ড দিয়ে দেশের সমস্ত ওয়েবসাইটে সার্চ করে কম থেকে বেশি মূল্যে সাজানো হয়েছে)</span>
+            </div>
             <div class="inspected-price-row">
-              <span class="inspected-price-label">এই স্টোরে মূল্য:</span>
+              <span class="inspected-price-label">আপনার পেস্ট করা সাইটে দাম:</span>
               <span class="inspected-price-value" id="inspectedPrice">৳০</span>
-              <span class="inspected-stock-badge">✓ ইন-স্টক ভেরিফাইড</span>
+              <span id="inspectedSavingsBadge" class="inspected-savings-alert" style="display: none; background: #10b981; color: #fff; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 12px; margin-left: 8px;"></span>
             </div>
           </div>
           <a id="inspectedLink" href="#" target="_blank" rel="noopener noreferrer" class="inspected-visit-btn">
-            মূল স্টোর পেজ দেখুন ↗
+            পেস্ট করা স্টোরে যান ↗
           </a>
         </div>
       </div>

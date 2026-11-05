@@ -1,6 +1,6 @@
 # 🤖 BD Price Sentinel - 22-Category Omni-Store Parallel Agent Architecture (AGENTS.md)
 
-This document defines the agent architecture, specialized scraping roles, multi-category routing protocols, resilient cross-platform network fetching (Vercel Linux + Windows), integrated omni-browser URL inspection, AI query decomposition (Groq/Vyce/Local NLP), and anti-hallucination protocols powering **দাম কত BD (BD Price Sentinel)** across **22 Categories and 3,000+ Verified Bangladeshi E-Commerce Stores**.
+This document defines the agent architecture, specialized scraping roles, multi-category routing protocols, resilient cross-platform network fetching (Vercel Linux + Windows), Cloudflare anti-bot evasion via whitelisted SERP replica indexing, integrated omni-browser URL inspection, AI query decomposition (Groq/Vyce/Local NLP), and anti-hallucination protocols powering **দাম কত BD (BD Price Sentinel)** across **22 Categories and 3,000+ Verified Bangladeshi E-Commerce Stores**.
 
 ---
 
@@ -22,29 +22,29 @@ This document defines the agent architecture, specialized scraping roles, multi-
                          [AI & NLP Query Synthesizer Agent]
                          - Ultra-Fast Local Regex/NLP Engine (0ms, 100% Offline)
                          - Optional Groq API (llama-3.1-8b) / Vyce API Accelerator
-                         - Extracts clean search keywords: e.g. "Acer Nitro V 15"
+                         - Multi-Variant Keyword Expander (e.g. "acer nitro v16" -> "nitro 16", "anv16")
                                               │
                                               ▼
                          [Category Store Cluster Dispatcher Agent]
                          (Loads 150-200+ Stores for Detected Category)
                                               │
-                ┌─────────────────────────────┴─────────────────────────────┐
-                ▼                                                           ▼
-    [Dedicated Direct Store Scrapers & APIs]               [Omni-Search Category Sweepers]
-    - Star Tech BD (Live Search API)                       - Yahoo BD Engine (Decodes RU URLs)
-    - Daraz Bangladesh (Real-Time JSON API)                - DuckDuckGo / Search Engine Sweepers
-    - Apple Gadgets BD (REST Endpoint)                     - Sweeps 3,000+ Verified .bd Stores
-    - Dazzle BD (Fast Product Search)                      - Area51, Computer Mania, Techland,
-    - Skyland BD (Hardware Search)                           Ryans, Pickaboo, Chaldal, Rokomari
-    - Dual Engine: Native Node Fetch + curl fallback
-                │                                                           │
-                └─────────────────────────────┬─────────────────────────────┘
+                ┌─────────────────────────────┼─────────────────────────────┐
+                ▼                             ▼                             ▼
+    [Dedicated Direct APIs]        [Dedicated Area 51 & Store Scrapers]   [SERP Replica Anti-Bot Sweepers]
+    - Star Tech BD (Live API)      - Area 51 BD (SERP Replica)            - Yahoo BD Search Engine
+    - Daraz Bangladesh (JSON API)  - Computer Mania BD (SERP Replica)     - Bypasses Cloudflare Managed
+    - Apple Gadgets BD (REST)      - TechLand BD (SERP Replica)             Challenges ("Just a moment...")
+    - Dazzle BD (Fast Search)      - Ryans Computers (SERP Replica)       - Extracts BDT prices directly
+    - Skyland BD (Hardware Search) - Star Tech BD (Variant Sweeper)         from SERP snippet cache
+                │                             │                             │
+                └─────────────────────────────┼─────────────────────────────┘
                                               ▼
                         [Product & Hardware Strict Spec Verifier]
                         - Tech: DDR5 vs DDR4, NVMe capacity, CPU accessories
                         - Pharma: Dosages (mg), pack count, syrup vs tab
                         - Fashion/Books: Brand, author, edition, volume
-                        - Relevance scored against extracted keywords (NOT raw URL)
+                        - Laptop vs Monitor isolation: blocks monitors on laptop queries
+                        - Relevance scored against canonical distilled search keywords
                                               │
                                               ▼
                          [Best Value & Telemetry Ranker Agent]
@@ -57,8 +57,8 @@ This document defines the agent architecture, specialized scraping roles, multi-
                                               │
                                               ▼
                          [Scan Audit & Store Transparency Inspector]
-                         - Shows exact list of stores scanned for query
-                         - Store response status & live query telemetry
+                         - Shows exact list of stores scanned for query with live deal counts
+                         - Real price detection (eliminates "Call for Price" when BDT is in SERP)
                                               │
                                               ▼
                          [Interactive Category Store Explorer Engine]
@@ -71,8 +71,38 @@ This document defines the agent architecture, specialized scraping roles, multi-
 
 ## 👥 Specialized Agent Roles
 
-### 1. Direct URL Inspector & In-App Omni-Browser Agent (ইউআরএল ইন্সপেক্টর ও অমনি-ব্রাউজার)
-* **Problem Solved**: Previously, pasting a product URL only displayed that single store's item, because relevance checking compared against the raw URL string, and Vercel serverless fetch failed.
+### 1. Cloudflare Anti-Bot Evasion & SERP Replica Agent (ক্লাউডফ্লেয়ার বাইপাস ও এসইআরপি রেপ্লিকা)
+* **Problem Solved**: Top Bangladeshi retailers like **Area 51 BD (`area51.com.bd`)**, **Computer Mania BD (`computermania.com.bd`)**, **TechLand BD (`techlandbd.com`)**, and **Ryans Computers (`ryans.com`)** use Cloudflare Bot Management / "Under Attack" mode, returning `403 Forbidden` or `Just a moment...` JavaScript challenges to serverless scrapers.
+* **Architecture**:
+  - Major search engine crawlers (Yahoo / Bing / Google) are explicitly whitelisted by Cloudflare CDN IP ranges.
+  - The SERP Replica Agent queries whitelisted Yahoo BD search endpoints with site-targeted operators:
+    - `site:area51.com.bd <query>`
+    - `site:computermania.com.bd <query>`
+    - `site:techlandbd.com <query>`
+    - `site:ryans.com <query>`
+  - Instead of discarding snippet metadata, the agent extracts:
+    1. Canonical direct product URL (decoded from `/RU=...`).
+    2. Exact product model title and configuration specs.
+    3. Live promotional and regular BDT price (e.g. `145,000.00৳ 134,900.00৳ -4%`).
+  - This guarantees that **Area 51 BD** deals (such as `Acer Nitro V16 AI ANV16S 16.0"` at **৳134,900**) and **Computer Mania BD** deals are 100% discovered, priced, and ranked.
+
+### 2. Dedicated Area 51 BD Scraper Agent (এরিয়া ৫১ স্পেশালিস্ট স্ক্র্যাপার)
+* **Goal**: Area 51 BD is one of the most competitive tech stores in Bangladesh with aggressive pricing on 2025/2026 gaming laptops.
+* **Execution**:
+  - Dedicated runner in [`src/scrapers/area51.js`](file:///E:/price/src/scrapers/area51.js).
+  - Sweeps Area 51's indexed product catalog via SERP replica.
+  - Maps promotional discount prices (`৳134,900`) and regular prices (`৳145,000`).
+  - Directly feeds verified Area 51 deals into the aggregator deal pipeline.
+
+### 3. Multi-Variant Keyword Expander Agent (মাল্টি-ভেরিয়েন্ট কিওয়ার্ড এক্সপ্যান্ডার)
+* **Problem Solved**: OpenCart / legacy retail search bars (e.g. Star Tech, Skyland, Ryans) require exact phrase matches. When a user searches `"acer nitro v16"`, Star Tech returns 0 because Star Tech catalogs the laptop as `"Acer Nitro 16"` or `"Nitro 16"` or `"ANV16"`.
+* **Execution**:
+  - Automatically decomposes queries with alphanumeric version tokens:
+    - `"acer nitro v16"` -> `["acer nitro v16", "nitro 16", "acer nitro 16", "anv16"]`
+    - `"rtx 4060"` -> `["rtx 4060", "geforce rtx 4060"]`
+  - Runs parallel variant sweeps on Star Tech and Ryans, aggregating all matching laptops.
+
+### 4. Direct URL Inspector & In-App Omni-Browser Agent (ইউআরএল ইন্সপেক্টর ও অমনি-ব্রাউজার)
 * **Goal**: When a user pastes ANY product URL (e.g. from StarTech, Area51, Ryans, Daraz, Techland, Dazzle, Apple Gadgets, etc.):
   1. Inspects the URL with the in-app browser engine to extract:
      - Official product title (from `<meta property="og:title">`, `<title>`, or clean URL slug).
@@ -83,53 +113,27 @@ This document defines the agent architecture, specialized scraping roles, multi-
   4. Ranks ALL stores side-by-side from lowest to highest price.
   5. Alerts the user if another store has the identical product at a lower price than their pasted link.
 
-### 2. AI & NLP Query Synthesizer Agent (এআই ও এনএলপি কিওয়ার্ড ডিস্টিলার)
+### 5. AI & NLP Query Synthesizer Agent (এআই ও এনএলপি কিওয়ার্ড ডিস্টিলার)
 * **Goal**: Transform complex, noisy, or long-tail product titles and URL slugs into high-yield search terms.
 * **Dual-Mode Engine**:
   - **Local High-Performance NLP (Default)**: Zero-latency, zero-dependency tokenizer and entity extractor anchored on tech brands, model numbers, chipsets, and capacities.
   - **AI Acceleration (Groq / Vyce API)**: Seamlessly enabled when `GROQ_API_KEY` or `VYCE_API_KEY` is provided. Uses ultra-fast LLMs (`llama-3.1-8b-instant`) to parse intricate model designations into clean search keywords in under 200ms.
 
-### 3. Resilient Cross-Platform Network Fetcher (ক্রস-প্ল্যাটফর্ম হাইব্রিড ফেচার)
-* **Problem Solved**: On Vercel (Linux Serverless Lambda), hardcoded `curl.exe` caused immediate `ENOENT` crashes, returning 0 results in 0.1 seconds.
+### 6. Resilient Cross-Platform Network Fetcher (ক্রস-প্ল্যাটফর্ম হাইব্রিড ফেচার)
 * **Dual-Layer Architecture**:
   - **Layer 1 (Native Node.js Fetch)**: Modern standard `fetch` with realistic browser headers, gzip/br compression, and `AbortController` timeout. Natively works on Vercel Linux, AWS Lambda, Windows, and macOS.
   - **Layer 2 (Cross-Platform curl Fallback)**: Automatically detects OS (`process.platform === 'win32' ? 'curl.exe' : 'curl'`) for sites requiring advanced TLS evasion, wrapped in safe try/catch error guards.
 
-### 4. Category Classifier & Intent Routing Agent (শ্রেণী বিন্যাস ও ইন্টেন্ট রাউটার)
-* **Goal**: Route queries to the optimal category store cluster across 22 categories:
-  1. `fashion` (আড়ং, সেইলর, ইনফিনিটি, ইয়োলো, জেন্টল পার্ক, ইত্যাদি)
-  2. `electronics` (স্টারটেক, রায়ান্স, টেক dealল্যান্ড, ড্যাজল, অ্যাপল গ্যাজেটস, স্কাইল্যান্ড, কম্পিউটার ম্যানিয়া, এরিয়া৫১)
-  3. `grocery` (চালডাল, স্বপ্ন, মীনা বাজার, আগোরা, ইত্যাদি)
-  4. `pharmacy` (আরোগ্য, ওষুধ ডট কম, ডিজিফার্মা, ইত্যাদি)
-  5. `books` (রকমারি, ওয়াফিলাইফ, প্রথমা, বাতিঘর, ইত্যাদি)
-  6. `furniture` (হাতিল, অটোবি, আখতার, নাভানা ফার্নিচার)
-  7. `beauty` (সাজগোজ, রূপচর্চা, ইত্যাদি)
-  8. `baby` (টগলস, বেবি শপ বিডি, কিডস ক্র্যাডেল)
-  9. `footwear` (এপেক্স, বাটা, বে এম্পোরিয়াম, লোটো বিডি)
-  10. `jewelry` (ডায়মন্ড ওয়ার্ল্ড, ভেনাস জুয়েলার্স, আমিন জুয়েলার্স)
-  11. `organic` (খাস ফুড, সুন্দরবন অরগানিক, ইত্যাদি)
-  12. `sports` (স্পোর্টস ওয়ার্ল্ড, ডিক্যাথলন বিডি)
-  13. `automobile` (গিয়ারএক্স বিডি, বাইকবাবার)
-  14. `appliances` (ওয়ালটন, মিনিস্টার, সিঙ্গার বিডি, বাটারফ্লাই)
-  15. `bags` (প্রেসিডেন্ট, লাগেজ বিডি)
-  16. `pets` (পেটজোন বিডি, অ্যাকোয়ারিয়াম বিডি)
-  17. `music` (মেলোডি বিডি, গিটার সেন্টার)
-  18. `gifts` (উপহার বিডি, বিডিফ্লোরিস্ট)
-  19. `eyewear` (লেন্সকার্ট বিডি, ফ্যাশন অপটিক্স)
-  20. `handicrafts` (কারুপল্লী, জয়িতা)
-  21. `hardware` (ইনকো বিডি, ক্রাউন হার্ডওয়্যার)
-  22. `marketplace` (দারাজ, পিকাবু, অথবা, বিক্রয়)
-
-### 5. Hardware & Product Specification Verifier Agent (জিরো-টলারেন্স স্পেক ভেরিফায়ার)
-* **Goal**: Eliminate hallucinations, false-positive cheap accessories, mismatched memory generations, and wrong dosages.
+### 7. Product & Hardware Strict Spec Verifier (জিরো-টলারেন্স স্পেক ভেরিফায়ার)
 * **Protocols**:
+  - Laptop vs Monitor: Blocks monitors (e.g. `Acer Nitro VG270 X1 27" IPS Monitor`) on laptop queries (`acer nitro v16`).
+  - Series Lock: Enforces series isolation (e.g. Nitro strictly rejects Aspire).
   - Memory: `DDR5` strictly disqualifies `DDR4` and `DDR3`.
   - Chipset: `B650` strictly disqualifies `B450`, `B550`, `B560`.
   - Storage: Capacity token matching (512GB strictly rejects 64GB / 256GB).
   - CPU Accessories: CPUs reject fans, heatsinks, brackets, thermal paste.
-  - Relevance scored strictly against the canonical distilled search keywords.
 
-### 6. Best Value & Telemetry Ranker Agent (মূল্য যাচাই ও র‍্যাংকিং এজেন্ট)
+### 8. Best Value & Telemetry Ranker Agent (মূল্য যাচাই ও র‍্যাংকিং এজেন্ট)
 * **Goal**: Sort all verified deals strictly from lowest price to highest price:
   - 🥇 Top 1 Winner (Cheapest Verified In-Stock Deal)
   - 🥈 Top 2 Runner-up Deal

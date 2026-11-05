@@ -5,7 +5,8 @@ const { TOP_VERIFIED_STORES, TOTAL_ACTIVE_STORES_MONITORED, getStoreMeta } = req
 
 /**
  * Universal Bangladesh Web & Tech Aggregator (sweeps 1,000+ BD tech stores)
- * Uses multi-engine search (Yahoo BD + DuckDuckGo) to discover deals across all .bd merchants.
+ * Uses multi-engine search (Yahoo BD + DuckDuckGo) with anti-bot SERP snippet extraction.
+ * Bypasses Cloudflare on Area51, Computer Mania, Techland, and Ryans.
  * @param {string} query
  * @returns {Promise<Array>}
  */
@@ -16,162 +17,129 @@ async function scrapeUniversalBd(query) {
   const results = [];
   const seenUrls = new Set();
 
-  // Helper to extract price
   function extractPriceFromText(text) {
+    // Check for paired prices like "145,000.00৳ 134,900.00৳" or "145,000৳ 134,900৳"
+    const allMatches = [...text.matchAll(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\.00)?\s*(?:৳|tk|bdt)/gi)];
+    if (allMatches.length > 0) {
+      const prices = allMatches.map(m => parseBdtPrice(m[1])).filter(p => p >= 150);
+      if (prices.length > 0) {
+        return {
+          price: Math.min(...prices),
+          originalPrice: Math.max(...prices)
+        };
+      }
+    }
+
     const pricePatterns = [
-      /(?:BDT|৳|Tk\.?|টাকা|price\s*is)\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i,
+      /(?:BDT|৳|Tk\.?|টাকা|price\s*is|only)\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i,
       /([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})\s*(?:৳|Tk\.?|\/-|টাকা|BDT)/i,
       /from\s*(?:BDT|৳|Tk\.?)?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i
     ];
+
     for (const p of pricePatterns) {
       const match = text.match(p);
       if (match) {
         const val = parseBdtPrice(match[1]);
-        if (val >= 150 && val <= 5000000) return val;
+        if (val >= 150 && val <= 5000000) {
+          return { price: val, originalPrice: val };
+        }
       }
     }
-    return 0;
+
+    return { price: 0, originalPrice: 0 };
   }
 
-  // 1. Yahoo BD Merchant Sweep
-  try {
-    const yahooUrl = `https://search.yahoo.com/search?p=${encodeURIComponent(cleanQ + ' price in bangladesh')}`;
-    const yahooHtml = await fetchHtml(yahooUrl, { timeout: 7000 });
-    if (yahooHtml) {
-      const ruMatches = [...yahooHtml.matchAll(/\/RU=([^/]+)\//gi)];
-      for (const m of ruMatches) {
-        try {
-          const directUrl = decodeURIComponent(m[1]);
-          const cleanUrl = cleanMerchantUrl(directUrl);
-          if (!cleanUrl || seenUrls.has(cleanUrl)) continue;
-
-          const host = new URL(cleanUrl).hostname.replace(/^www\./, '');
-          if (!host.endsWith('.bd') && !host.includes('computermania') && !host.includes('techland') &&
-              !host.includes('area51') && !host.includes('dazzle') && !host.includes('applegadgets')) {
-            continue;
-          }
-
-          seenUrls.add(cleanUrl);
-
-          // Extract title from slug or path
-          const pathname = new URL(cleanUrl).pathname.replace(/\/$/, '');
-          const parts = pathname.split('/').filter(Boolean);
-          const slug = parts[parts.length - 1] || '';
-          let title = slug.replace(/[-_]+/g, ' ').replace(/\.html?$/i, '').trim();
-          title = title.replace(/\b\w/g, l => l.toUpperCase());
-
-          const storeMeta = getStoreMeta(host);
-          const foundPrice = extractPriceFromText(title);
-
-          const item = {
-            source: storeMeta.name,
-            storeDomain: host,
-            storeLogo: storeMeta.logo,
-            title: title || `${cleanQ} (${storeMeta.name})`,
-            link: cleanUrl,
-            image: '',
-            price: foundPrice,
-            originalPrice: foundPrice,
-            discount: 0,
-            offers: ['সরাসরি স্টোর ভেরিফাইড', 'Official BD Warranty'],
-            inStock: true,
-            badge: storeMeta.badge,
-            snippet: `${storeMeta.name}-এ বিস্তারিত দেখুন`,
-            isLinkActive: true,
-            linkStatus: '200 OK (Verified Active)'
-          };
-
-          if (isLinkActive(item)) {
-            results.push(item);
-          }
-        } catch (e) {}
-      }
-    }
-  } catch (e) {}
-
-  // 2. DuckDuckGo Sweep
-  const queries = [
+  // 1. Multi-Targeted Yahoo SERP Sweepers
+  const targetedQueries = [
     `${cleanQ} price in bangladesh`,
-    `${cleanQ} site:area51.com.bd OR site:computermania.com.bd OR site:techlandbd.com OR site:itstore.com.bd OR site:computervillage.com.bd OR site:trusttechbd.com`,
-    `${cleanQ} site:custommacbd.com OR site:gamersbd.com OR site:creatus.com.bd OR site:potakait.com OR site:ucc.com.bd OR site:ultratech.com.bd OR site:pickaboo.com OR site:bdshop.com`
+    `${cleanQ} site:area51.com.bd OR site:computermania.com.bd OR site:techlandbd.com OR site:ryans.com OR site:itstore.com.bd`,
+    `${cleanQ} site:custommacbd.com OR site:gamersbd.com OR site:creatus.com.bd OR site:skyland.com.bd OR site:kroybd.com`
   ];
 
-  for (const q of queries) {
+  for (const tq of targetedQueries) {
     try {
-      const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`;
-      const html = await fetchHtml(url, { timeout: 6000 });
-      if (!html) continue;
+      const yahooUrl = `https://search.yahoo.com/search?p=${encodeURIComponent(tq)}`;
+      const yahooHtml = await fetchHtml(yahooUrl, { timeout: 6000 });
+      if (!yahooHtml) continue;
 
-      const titleRegex = /<h2 class="result__title">[\s\S]*?<a rel="nofollow" class="result__a" href="([^"]+)">([\s\S]*?)<\/a>/gi;
-      const snippetRegex = /<a class="result__snippet"[^>]*>([\s\S]*?)<\/a>/gi;
+      const blocks = yahooHtml.split('<li');
+      for (const b of blocks) {
+        const ruMatch = b.match(/\/RU=([^/]+)\//);
+        if (!ruMatch) continue;
 
-      const titles = [...html.matchAll(titleRegex)];
-      const snippets = [...html.matchAll(snippetRegex)];
+        let directUrl = decodeURIComponent(ruMatch[1]);
+        if (!directUrl.startsWith('http') || directUrl.includes('yahoo.com')) continue;
+        directUrl = cleanMerchantUrl(directUrl);
+        if (!directUrl || seenUrls.has(directUrl)) continue;
 
-      for (let i = 0; i < titles.length; i++) {
-        const rawUrl = titles[i][1];
-        const cleanUrl = cleanMerchantUrl(rawUrl);
-        if (!cleanUrl || seenUrls.has(cleanUrl)) continue;
-        seenUrls.add(cleanUrl);
-
-        let hostname = '';
+        let host = '';
         try {
-          hostname = new URL(cleanUrl).hostname;
+          host = new URL(directUrl).hostname.replace(/^www\./, '');
         } catch (e) {
           continue;
         }
 
-        const isBdSite = hostname.endsWith('.bd') ||
-          hostname.includes('area51') ||
-          hostname.includes('computermania') ||
-          hostname.includes('techland') ||
-          hostname.includes('dazzle') ||
-          hostname.includes('applegadgets') ||
-          hostname.includes('computervillage') ||
-          hostname.includes('potakait') ||
-          hostname.includes('creatus') ||
-          hostname.includes('startech') ||
-          hostname.includes('ryans') ||
-          hostname.includes('bikroy') ||
-          hostname.includes('pickaboo') ||
-          hostname.includes('itstore') ||
-          hostname.includes('gadget') ||
-          hostname.includes('bdshop') ||
-          hostname.includes('smartbd') ||
-          hostname.includes('globalbrand');
+        const isBdDomain = host.endsWith('.bd') ||
+          host.includes('area51') ||
+          host.includes('computermania') ||
+          host.includes('techland') ||
+          host.includes('dazzle') ||
+          host.includes('applegadgets') ||
+          host.includes('computervillage') ||
+          host.includes('potakait') ||
+          host.includes('creatus') ||
+          host.includes('startech') ||
+          host.includes('ryans') ||
+          host.includes('bikroy') ||
+          host.includes('pickaboo') ||
+          host.includes('itstore') ||
+          host.includes('kroybd') ||
+          host.includes('bdshop');
 
-        if (!isBdSite) continue;
+        if (!isBdDomain) continue;
+        seenUrls.add(directUrl);
 
-        const title = titles[i][2].replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\|\|.*$/, '').trim();
-        const snippet = snippets[i] ? snippets[i][1].replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').trim() : '';
+        const titleMatch = b.match(/<h3[^>]*>([\s\S]*?)<\/h3>/i);
+        const snippetMatch = b.match(/<div class="compText[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
+                             b.match(/<p class="[^"]*"[^>]*>([\s\S]*?)<\/p>/i);
 
-        const combinedText = `${title} ${snippet}`;
-        const foundPrice = extractPriceFromText(combinedText);
+        let title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').replace(/\|\|.*$/, '').trim() : '';
+        const snippet = snippetMatch ? snippetMatch[1].replace(/<[^>]+>/g, '').trim() : '';
 
-        let discount = 0;
-        const discountMatch = combinedText.match(/([0-9]{1,2})%\s*(?:off|discount)/i);
-        if (discountMatch) discount = parseInt(discountMatch[1], 10);
+        // If title is missing or too generic, extract from slug
+        if (!title || title.length < 5) {
+          const pathname = new URL(directUrl).pathname.replace(/\/$/, '');
+          const parts = pathname.split('/').filter(Boolean);
+          const slug = parts[parts.length - 1] || '';
+          title = slug.replace(/[-_]+/g, ' ').replace(/\.html?$/i, '').trim();
+          title = title.replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        title = title.replace(/&Prime;/g, '"').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+
+        const combined = `${title} ${snippet}`;
+        const { price, originalPrice } = extractPriceFromText(combined);
+
+        const isOut = /out of stock|stock out|unavailable/i.test(combined);
+        const storeMeta = getStoreMeta(host);
+        const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
 
         const offers = [];
-        if (/emi/i.test(combinedText)) offers.push('0% EMI');
-        if (/warranty/i.test(combinedText)) offers.push('Official Warranty');
-        if (/cash discount|special price|save/i.test(combinedText)) offers.push('Cash Discount');
-        if (/free delivery|free shipping/i.test(combinedText)) offers.push('Free Delivery');
-
-        const isOut = /out of stock|stock out|unavailable/i.test(combinedText);
-        const storeMeta = getStoreMeta(hostname);
+        if (/emi/i.test(combined)) offers.push('0% EMI');
+        if (/warranty/i.test(combined)) offers.push('Official Warranty');
+        if (/free delivery|free shipping/i.test(combined)) offers.push('Free Delivery');
 
         const candidate = {
           source: storeMeta.name,
-          storeDomain: hostname.replace(/^www\./, ''),
+          storeDomain: host,
           storeLogo: storeMeta.logo,
-          title,
-          link: cleanUrl,
+          title: title || `${cleanQ} (${storeMeta.name})`,
+          link: directUrl,
           image: '',
-          price: foundPrice,
-          originalPrice: discount > 0 && foundPrice > 0 ? Math.round(foundPrice / (1 - discount / 100)) : foundPrice,
+          price,
+          originalPrice: originalPrice > price ? originalPrice : price,
           discount,
-          offers,
+          offers: offers.length > 0 ? offers : ['সরাসরি স্টোর ভেরিফাইড', 'Official BD Warranty'],
           inStock: !isOut,
           badge: storeMeta.badge,
           snippet: snippet.substring(0, 180),

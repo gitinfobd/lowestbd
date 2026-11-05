@@ -2,15 +2,10 @@ const { fetchHtml } = require('../utils/curlFetcher');
 const { parseBdtPrice } = require('../utils/textMatcher');
 
 /**
- * Star Tech BD Live Scraper
- * @param {string} query
- * @returns {Promise<Array>}
+ * Parses Star Tech HTML response into structured product objects
  */
-async function scrapeStarTech(query) {
-  const url = `https://www.startech.com.bd/product/search?search=${encodeURIComponent(query)}`;
-  const html = await fetchHtml(url);
+function parseStarTechHtml(html) {
   if (!html) return [];
-
   const items = [];
   const rawItems = html.split('<div class="p-item">');
 
@@ -57,6 +52,40 @@ async function scrapeStarTech(query) {
         inStock: !isOut && price > 0,
         badge: 'Verified Retailer'
       });
+    }
+  }
+
+  return items;
+}
+
+/**
+ * Star Tech BD Live Scraper with Smart Variant Expansion
+ * @param {string} query
+ * @returns {Promise<Array>}
+ */
+async function scrapeStarTech(query) {
+  if (!query) return [];
+
+  const mainUrl = `https://www.startech.com.bd/product/search?search=${encodeURIComponent(query)}`;
+  const mainHtml = await fetchHtml(mainUrl);
+  let items = parseStarTechHtml(mainHtml);
+
+  // If exact query yields 0 results, expand query variants
+  if (items.length === 0 && (/v\d+/i.test(query) || /nitro/i.test(query))) {
+    const variants = [];
+    if (/v(\d+)/i.test(query)) {
+      variants.push(query.replace(/v(\d+)/i, '$1'));      // e.g. "acer nitro 16"
+      variants.push(query.replace(/v(\d+)/i, 'anv$1'));   // e.g. "acer nitro anv16"
+    }
+
+    for (const v of variants) {
+      const vUrl = `https://www.startech.com.bd/product/search?search=${encodeURIComponent(v)}`;
+      const vHtml = await fetchHtml(vUrl);
+      const vItems = parseStarTechHtml(vHtml);
+      if (vItems.length > 0) {
+        items.push(...vItems);
+        break;
+      }
     }
   }
 

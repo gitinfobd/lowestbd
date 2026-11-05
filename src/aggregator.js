@@ -4,6 +4,7 @@ const { scrapeRyans } = require('./scrapers/ryans');
 const { scrapeSkyland } = require('./scrapers/skyland');
 const { scrapeDazzle } = require('./scrapers/dazzle');
 const { scrapeAppleGadgets } = require('./scrapers/applegadgets');
+const { scrapeArea51 } = require('./scrapers/area51');
 const { scrapeUniversalBd, KNOWN_STORES, TOTAL_ACTIVE_STORES_MONITORED } = require('./scrapers/universalBd');
 const { scrapeCategoryStores } = require('./scrapers/categoryDispatcher');
 const { scrapeRokomari } = require('./scrapers/rokomari');
@@ -74,6 +75,7 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
     scraperTasks.push(
       scrapeDazzle(targetSearchTerm),
       scrapeAppleGadgets(targetSearchTerm),
+      scrapeArea51(targetSearchTerm),
       scrapeStarTech(targetSearchTerm),
       scrapeRyans(targetSearchTerm),
       scrapeSkyland(targetSearchTerm),
@@ -89,7 +91,7 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
   if (detectedCategory.id === 'books') {
     scannedSources.push('Rokomari Books');
   } else if (detectedCategory.id === 'electronics' || detectedCategory.id === 'all') {
-    scannedSources.push('Dazzle BD', 'Apple Gadgets BD', 'Star Tech', 'Ryans Computers', 'Skyland BD');
+    scannedSources.push('Dazzle BD', 'Apple Gadgets BD', 'Area 51 BD', 'Star Tech', 'Ryans Computers', 'Skyland BD');
   }
 
   // If user pasted a URL, prepend it
@@ -234,7 +236,9 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
     ).length;
 
     let scanMethod = 'Cluster Domain Sweep & Web Sentinel';
-    if (sDomain.includes('daraz') || sDomain.includes('rokomari') || sDomain.includes('dazzle') || sDomain.includes('applegadgets') || sDomain.includes('startech') || sDomain.includes('ryans') || sDomain.includes('skyland')) {
+    if (sDomain.includes('area51')) {
+      scanMethod = '🛸 Direct Store & SERP Replica';
+    } else if (sDomain.includes('daraz') || sDomain.includes('rokomari') || sDomain.includes('dazzle') || sDomain.includes('applegadgets') || sDomain.includes('startech') || sDomain.includes('ryans') || sDomain.includes('skyland')) {
       scanMethod = '⚡ Direct Store REST API';
     } else if (sDomain.includes('aarong') || sDomain.includes('hatil') || sDomain.includes('apex') || sDomain.includes('chaldal') || sDomain.includes('arogga') || sDomain.includes('shajgoj')) {
       scanMethod = '🛸 Targeted Store Scraper';

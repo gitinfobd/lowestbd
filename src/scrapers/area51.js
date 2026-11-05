@@ -22,10 +22,16 @@ async function scrapeArea51(query) {
   const seenUrls = new Set();
 
   function extractPriceFromText(text) {
+    const clean = (text || '')
+      .replace(/&#2547;|&amp;#2547;|&#x9f3;/gi, '৳')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&Prime;/gi, '"')
+      .replace(/&quot;/gi, '"');
+
     // Check for pairs like "145,000.00৳ 134,900.00৳" or "134,900৳"
-    const allMatches = [...text.matchAll(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\.00)?\s*(?:৳|tk|bdt)/gi)];
+    const allMatches = [...clean.matchAll(/([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{4,7})(?:\.00)?\s*(?:৳|tk|bdt)/gi)];
     if (allMatches.length > 0) {
-      const prices = allMatches.map(m => parseBdtPrice(m[1])).filter(p => p >= 1000);
+      const prices = allMatches.map(m => parseBdtPrice(m[1])).filter(p => p >= 1000 && p <= 5000000);
       if (prices.length > 0) {
         return {
           price: Math.min(...prices),
@@ -34,8 +40,8 @@ async function scrapeArea51(query) {
       }
     }
 
-    const m = text.match(/(?:bdt|৳|tk\.?|টাকা|price\s*is)\s*([0-9]{1,3}(?:,[0-9]{3})+)/i) ||
-              text.match(/([0-9]{1,3}(?:,[0-9]{3})+)\s*(?:bdt|৳|tk\.?|\/-|টাকা)/i);
+    const m = clean.match(/(?:bdt|৳|tk\.?|টাকা|price\s*is)\s*[:.]?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{4,7})/i) ||
+              clean.match(/([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{4,7})\s*(?:bdt|৳|tk\.?|\/-|টাকা)/i);
     const p = m ? parseBdtPrice(m[1]) : 0;
     return { price: p, originalPrice: p };
   }

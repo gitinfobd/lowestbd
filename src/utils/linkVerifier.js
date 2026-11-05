@@ -48,6 +48,11 @@ function cleanMerchantUrl(rawUrl) {
       return null;
     }
 
+    // Reject generic search/tag pages masquerading as single products
+    if (parsed.pathname.startsWith('/tag/') || parsed.pathname.startsWith('/search') || parsed.pathname === '/catalog' || parsed.pathname === '/shop') {
+      return null;
+    }
+
     // Strip tracking query params that can cause 404 or broken sessions
     const stripParams = ['fbclid', 'gclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', '_rsc', 'spm'];
     stripParams.forEach(p => parsed.searchParams.delete(p));

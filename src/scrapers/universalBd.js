@@ -18,10 +18,16 @@ async function scrapeUniversalBd(query) {
   const seenUrls = new Set();
 
   function extractPriceFromText(text) {
-    // Check for paired prices like "145,000.00৳ 134,900.00৳" or "145,000৳ 134,900৳"
-    const allMatches = [...text.matchAll(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\.00)?\s*(?:৳|tk|bdt)/gi)];
+    const clean = (text || '')
+      .replace(/&#2547;|&amp;#2547;|&#x9f3;/gi, '৳')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&Prime;/gi, '"')
+      .replace(/&quot;/gi, '"');
+
+    // 1. Paired promotional and regular prices
+    const allMatches = [...clean.matchAll(/([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{4,7})(?:\.00)?\s*(?:৳|tk|bdt)/gi)];
     if (allMatches.length > 0) {
-      const prices = allMatches.map(m => parseBdtPrice(m[1])).filter(p => p >= 150);
+      const prices = allMatches.map(m => parseBdtPrice(m[1])).filter(p => p >= 150 && p <= 5000000);
       if (prices.length > 0) {
         return {
           price: Math.min(...prices),
@@ -30,14 +36,22 @@ async function scrapeUniversalBd(query) {
       }
     }
 
+    // 2. Price ranges e.g. "ranges from 1,35,000 to 1,55,000 BDT"
+    const rangeMatch = clean.match(/ranges\s*from\s*([0-9,]+)\s*to\s*([0-9,]+)/i);
+    if (rangeMatch) {
+      const pMin = parseBdtPrice(rangeMatch[1]);
+      const pMax = parseBdtPrice(rangeMatch[2]);
+      if (pMin >= 150) return { price: pMin, originalPrice: pMax >= pMin ? pMax : pMin };
+    }
+
     const pricePatterns = [
-      /(?:BDT|৳|Tk\.?|টাকা|price\s*is|only)\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i,
-      /([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})\s*(?:৳|Tk\.?|\/-|টাকা|BDT)/i,
-      /from\s*(?:BDT|৳|Tk\.?)?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i
+      /(?:bdt|৳|tk\.?|টাকা|price\s*is|only)\s*[:.]?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i,
+      /([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})\s*(?:৳|tk\.?|\/-|টাকা|bdt)/i,
+      /from\s*(?:bdt|৳|tk\.?)?\s*([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]{3,7})/i
     ];
 
     for (const p of pricePatterns) {
-      const match = text.match(p);
+      const match = clean.match(p);
       if (match) {
         const val = parseBdtPrice(match[1]);
         if (val >= 150 && val <= 5000000) {

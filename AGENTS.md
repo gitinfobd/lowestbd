@@ -86,13 +86,27 @@ This document defines the agent architecture, specialized scraping roles, multi-
     3. Live promotional and regular BDT price (e.g. `145,000.00৳ 134,900.00৳ -4%`).
   - This guarantees that **Area 51 BD** deals (such as `Acer Nitro V16 AI ANV16S 16.0"` at **৳134,900**) and **Computer Mania BD** deals are 100% discovered, priced, and ranked.
 
-### 2. Dedicated Area 51 BD Scraper Agent (এরিয়া ৫১ স্পেশালিস্ট স্ক্র্যাপার)
-* **Goal**: Area 51 BD is one of the most competitive tech stores in Bangladesh with aggressive pricing on 2025/2026 gaming laptops.
-* **Execution**:
-  - Dedicated runner in [`src/scrapers/area51.js`](file:///E:/price/src/scrapers/area51.js).
-  - Sweeps Area 51's indexed product catalog via SERP replica.
-  - Maps promotional discount prices (`৳134,900`) and regular prices (`৳145,000`).
-  - Directly feeds verified Area 51 deals into the aggregator deal pipeline.
+### 2. Dedicated Store Bot Hub & Omni-Retailers (অল-স্টোর ডেডিকেটেড বট হাব)
+* **Problem Solved**: Rather than relying only on a single store scraper, every verified retailer in Bangladesh listed on the directory now has an active dedicated bot runner:
+  - **Computer Mania BD** (`computermania.com.bd`): Cloudflare SERP replica dedicated bot.
+  - **IT Store BD** (`itstore.com.bd`): Hybrid bot (SERP replica + direct WooCommerce/WoodMart `<bdi>` & `<ins>` tag inspector).
+  - **TechLand BD** (`techlandbd.com`): Cloudflare SERP replica dedicated bot.
+  - **Area 51 BD** (`area51.com.bd`): Dedicated gaming laptop SERP replica bot.
+  - **Star Tech BD** (`startech.com.bd`): Dedicated direct OpenCart API bot with variant expansion.
+  - **Daraz Bangladesh** (`daraz.com.bd`): Dedicated direct JSON API bot.
+  - **Dazzle BD** (`dazzle.com.bd`): Dedicated direct WooCommerce REST bot.
+  - **Apple Gadgets BD** (`applegadgetsbd.com`): Dedicated direct REST search bot.
+  - **Skyland BD** (`skyland.com.bd`): Dedicated hardware search bot.
+  - **Custom Mac BD** (`custommacbd.com`): Dedicated store bot.
+  - **Creatus Computer** (`creatus.com.bd`): Dedicated store bot with direct HTML inspection.
+  - **Potaka IT** (`potakait.com`): Dedicated store bot.
+  - **Computer Village** (`computervillage.com.bd`): Dedicated store bot.
+  - **Pickaboo BD** (`pickaboo.com`): Dedicated store bot.
+  - **BDShop** (`bdshop.com`): Dedicated store bot.
+  - **Universal BD Sentinel** (`universalBd.js`): Sweeps all 3,000+ stores across Bangladesh as a safety net.
+* **Bengali & Indian Numeral Formatting Support**:
+  - Automatically parses `1,35,000` (1 lakh 35 thousand), `1,55,000`, `134,900.00৳`, `145,000৳`, and HTML entity `&#2547;` without truncation or false zero "Call for Price".
+  - Resolves price ranges (`ranges from 1,35,000 to 1,55,000 BDT`) to the lowest starting price.
 
 ### 3. Multi-Variant Keyword Expander Agent (মাল্টি-ভেরিয়েন্ট কিওয়ার্ড এক্সপ্যান্ডার)
 * **Problem Solved**: OpenCart / legacy retail search bars (e.g. Star Tech, Skyland, Ryans) require exact phrase matches. When a user searches `"acer nitro v16"`, Star Tech returns 0 because Star Tech catalogs the laptop as `"Acer Nitro 16"` or `"Nitro 16"` or `"ANV16"`.

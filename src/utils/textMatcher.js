@@ -229,6 +229,19 @@ function calculateRelevance(rawQuery, title, price = 0) {
     }
   }
 
+  // Generation / Screen Version Isolation (e.g. 16 vs 15)
+  const queryHas16 = /\b(16|v16|anv16)\b/i.test(rawLower);
+  const queryHas15 = /\b(15|v15|anv15)\b/i.test(rawLower);
+  if (queryHas16 && !queryHas15) {
+    if (/\b(15|v15|anv15)\b/i.test(titleLower) && !/\b(16|v16|anv16)\b/i.test(titleLower)) {
+      return 0; // Strict rejection: User asked for 16, title is 15!
+    }
+  } else if (queryHas15 && !queryHas16) {
+    if (/\b(16|v16|anv16)\b/i.test(titleLower) && !/\b(15|v15|anv15)\b/i.test(titleLower)) {
+      return 0; // Strict rejection: User asked for 15, title is 16!
+    }
+  }
+
   // Series enforcement (e.g. user asked for "nitro", title cannot be "aspire")
   const seriesNames = ['nitro', 'predator', 'aspire', 'legion', 'victus', 'omen', 'tuf', 'rog', 'zenbook', 'vivobook', 'thinkpad', 'ideapad', 'macbook'];
   for (const sn of seriesNames) {
@@ -243,13 +256,16 @@ function calculateRelevance(rawQuery, title, price = 0) {
   // ZERO-TOLERANCE RULE 7: Exact Hardware Model Number Anchor Matching
   // =========================================================================
   // Extract key model numbers like 7600, 5600, 4060, 620, 225, m6
-  const modelNumbers = rawLower.match(/\b([0-9]{3,4}[a-z]*|[a-z]+[0-9]{1,4})\b/g) || [];
+  const normalizedRaw = rawLower.replace(/\bv\s+([0-9]+)\b/gi, 'v$1');
+  const normalizedTitle = titleLower.replace(/\bv\s+([0-9]+)\b/gi, 'v$1');
+  const modelNumbers = normalizedRaw.match(/\b([0-9]{3,4}[a-z]*|[a-z]+[0-9]{1,4})\b/g) || [];
   for (const mn of modelNumbers) {
     // Ignore common spec numbers & generic words
     if (['144', '165', '240', '360', '2023', '2024', '2025', '2026', 'gb', 'tb', 'mb', 'hz'].includes(mn)) continue;
 
-    // Check if title has this exact model number
-    const foundModelNumber = titleTokens.some(tt => tt === mn || tt.startsWith(mn) || tt.endsWith(mn));
+    // Check if title has this exact model number (or normalized title contains it)
+    const foundModelNumber = titleTokens.some(tt => tt === mn || tt.startsWith(mn) || tt.endsWith(mn)) ||
+                             normalizedTitle.includes(mn);
     if (!foundModelNumber) {
       return 0; // Critical hardware model number missing!
     }
@@ -312,14 +328,24 @@ function calculateRelevance(rawQuery, title, price = 0) {
 
 /**
  * Clean & normalize price number from various Bangladeshi formats
+ * Safely strips HTML entities (like &#2547; for Taka symbol), tags, and .00 decimals.
  * @param {string|number} rawPrice
  * @returns {number}
  */
 function parseBdtPrice(rawPrice) {
   if (typeof rawPrice === 'number') return Math.round(rawPrice);
   if (!rawPrice) return 0;
-  const cleaned = String(rawPrice).replace(/[^0-9]/g, '');
-  return parseInt(cleaned, 10) || 0;
+  const str = String(rawPrice)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&#[0-9]+;/g, ' ')
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/\.[0-9]{2}(?![0-9])/g, '')
+    .trim();
+
+  const match = str.match(/([0-9]{1,3}(?:,[0-9]{2,3})+|[0-9]+)/);
+  if (!match) return 0;
+  const num = parseInt(match[1].replace(/,/g, ''), 10);
+  return isNaN(num) ? 0 : num;
 }
 
 module.exports = {

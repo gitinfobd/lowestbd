@@ -5,6 +5,7 @@ const { scrapeSkyland } = require('./scrapers/skyland');
 const { scrapeDazzle } = require('./scrapers/dazzle');
 const { scrapeAppleGadgets } = require('./scrapers/applegadgets');
 const { scrapeArea51 } = require('./scrapers/area51');
+const { scrapeDedicatedStoreHub, DEDICATED_STORES } = require('./scrapers/dedicatedStoreHub');
 const { scrapeUniversalBd, KNOWN_STORES, TOTAL_ACTIVE_STORES_MONITORED } = require('./scrapers/universalBd');
 const { scrapeCategoryStores } = require('./scrapers/categoryDispatcher');
 const { scrapeRokomari } = require('./scrapers/rokomari');
@@ -76,6 +77,7 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
       scrapeDazzle(targetSearchTerm),
       scrapeAppleGadgets(targetSearchTerm),
       scrapeArea51(targetSearchTerm),
+      scrapeDedicatedStoreHub(targetSearchTerm),
       scrapeStarTech(targetSearchTerm),
       scrapeRyans(targetSearchTerm),
       scrapeSkyland(targetSearchTerm),
@@ -92,6 +94,9 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
     scannedSources.push('Rokomari Books');
   } else if (detectedCategory.id === 'electronics' || detectedCategory.id === 'all') {
     scannedSources.push('Dazzle BD', 'Apple Gadgets BD', 'Area 51 BD', 'Star Tech', 'Ryans Computers', 'Skyland BD');
+    for (const ds of DEDICATED_STORES) {
+      if (!scannedSources.includes(ds.name)) scannedSources.push(ds.name);
+    }
   }
 
   // If user pasted a URL, prepend it
@@ -240,6 +245,8 @@ async function searchAllStores(inputQuery, requestedCategory = null) {
       scanMethod = '🛸 Direct Store & SERP Replica';
     } else if (sDomain.includes('daraz') || sDomain.includes('rokomari') || sDomain.includes('dazzle') || sDomain.includes('applegadgets') || sDomain.includes('startech') || sDomain.includes('ryans') || sDomain.includes('skyland')) {
       scanMethod = '⚡ Direct Store REST API';
+    } else if (sDomain.includes('computermania') || sDomain.includes('itstore') || sDomain.includes('techland') || sDomain.includes('creatus') || sDomain.includes('potakait') || sDomain.includes('custommac') || sDomain.includes('computervillage') || sDomain.includes('pickaboo') || sDomain.includes('bdshop') || sDomain.includes('kroybd') || sDomain.includes('gamersbd') || sDomain.includes('pchouse') || sDomain.includes('ultratech') || sDomain.includes('trusttech')) {
+      scanMethod = '🤖 Dedicated Store Bot';
     } else if (sDomain.includes('aarong') || sDomain.includes('hatil') || sDomain.includes('apex') || sDomain.includes('chaldal') || sDomain.includes('arogga') || sDomain.includes('shajgoj')) {
       scanMethod = '🛸 Targeted Store Scraper';
     }
